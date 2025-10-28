@@ -6,6 +6,7 @@
     <title>ক্যারিয়ার - একতা ফাউন্ডেশন</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
     <style>
@@ -15,35 +16,22 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #2c5aa0;
-            --secondary: #e74c3c;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --success: #28a745;
-        }
-
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f6fa;
+            background: #f8f9fa;
             color: #333;
             line-height: 1.6;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header Styles */
+        /* Header */
         .header {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: #2c3e50;
+            color: white;
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .navbar {
@@ -62,20 +50,18 @@
         .logo {
             width: 40px;
             height: 40px;
-            background: var(--primary);
+            background: #e74c3c;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             font-size: 1.2rem;
-            color: white;
         }
 
         .logo-text {
             font-size: 1.5rem;
             font-weight: bold;
-            color: var(--primary);
         }
 
         .nav-menu {
@@ -85,337 +71,174 @@
         }
 
         .nav-link {
-            color: var(--dark);
+            color: white;
             text-decoration: none;
             transition: color 0.3s;
             font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
         }
 
-        .nav-link:hover,
+        .nav-link:hover {
+            color: #e74c3c;
+        }
+
         .nav-link.active {
-            color: var(--primary);
-            background: #f8f9fa;
+            color: #e74c3c;
         }
 
-        .header-buttons {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .apply-now-btn {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-        .apply-now-btn:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-        }
-
-        .login-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-
-        .login-btn:hover {
-            background: #234a8c;
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            cursor: pointer;
-        }
-
-        .bar {
-            width: 25px;
-            height: 3px;
-            background: var(--dark);
-            margin: 3px 0;
-            transition: 0.3s;
-        }
-
-        /* Hero Section with Photo */
+        /* Hero Banner with Photo */
         .career-hero {
-            background: linear-gradient(rgba(44, 90, 160, 0.8), rgba(44, 90, 160, 0.9)), url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9));
             color: white;
-            padding: 180px 0 100px;
+            padding: 150px 0 100px;
             text-align: center;
-            margin-top: 70px;
+            position: relative;
         }
 
-        .career-hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
         }
 
-        .career-hero p {
-            font-size: 1.3rem;
-            opacity: 0.95;
-            max-width: 700px;
-            margin: 0 auto 2rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
         }
 
-        .hero-stats {
-            display: flex;
-            justify-content: center;
-            gap: 3rem;
-            margin-top: 3rem;
-            flex-wrap: wrap;
+        .hero-content h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
 
-        .stat-item {
-            text-align: center;
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
         }
 
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
+        .apply-hero-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background 0.3s;
         }
 
-        .stat-label {
-            font-size: 1rem;
-            opacity: 0.9;
+        .apply-hero-btn:hover {
+            background: #c0392b;
         }
 
-        /* Jobs Section */
-        .jobs-section {
+        /* Job Posts Section */
+        .job-posts {
             padding: 80px 0;
-            background: var(--light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
         .section-title {
             text-align: center;
             font-size: 2.5rem;
             margin-bottom: 3rem;
-            color: var(--primary);
+            color: #2c3e50;
         }
 
         .jobs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
         }
 
         .job-card {
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #e74c3c;
             transition: transform 0.3s;
-            border-left: 4px solid var(--secondary);
-            overflow: hidden;
         }
 
         .job-card:hover {
             transform: translateY(-5px);
         }
 
-        .job-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 3rem;
-        }
-
-        .job-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .job-content {
-            padding: 2rem;
-        }
-
-        .job-header {
-            display: flex;
-            justify-content: between;
-            align-items: start;
-            margin-bottom: 1.5rem;
-        }
-
         .job-title {
-            flex: 1;
-        }
-
-        .job-title h3 {
-            color: var(--primary);
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
         }
 
         .job-meta {
             display: flex;
             gap: 1rem;
-            flex-wrap: wrap;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
 
-        .job-tag {
-            background: #e3f2fd;
-            color: var(--primary);
-            padding: 4px 12px;
+        .job-meta span {
+            background: #f8f9fa;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.9rem;
-            font-weight: 500;
+            color: #666;
         }
 
-        .job-details {
-            margin-bottom: 2rem;
-        }
-
-        .detail-item {
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .detail-item i {
-            color: var(--primary);
-            width: 20px;
-        }
-
-        .job-points {
-            margin: 1.5rem 0;
-        }
-
-        .point-title {
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 0.8rem;
-        }
-
-        .point-list {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .point-list li {
-            padding: 0.3rem 0;
-            position: relative;
-            padding-left: 1.5rem;
-        }
-
-        .point-list li:before {
-            content: "•";
-            color: var(--secondary);
-            font-weight: bold;
-            position: absolute;
-            left: 0;
+        .job-description {
+            margin-bottom: 1.5rem;
+            color: #555;
         }
 
         .apply-btn {
-            background: var(--primary);
+            background: #e74c3c;
             color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
+            padding: 10px 25px;
+            border-radius: 5px;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            width: 100%;
             font-size: 1rem;
+            transition: background 0.3s;
+            width: 100%;
         }
 
         .apply-btn:hover {
-            background: #234a8c;
-            transform: translateY(-2px);
+            background: #c0392b;
         }
 
-        /* Quick Apply Form Popup */
-        .apply-popup {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .apply-form {
+        /* Application Form */
+        .application-form {
             background: white;
-            padding: 2.5rem;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 450px;
-            position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            animation: popIn 0.4s ease-out;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+            display: none;
         }
 
-        @keyframes popIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8) translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: #666;
-            transition: color 0.3s;
-        }
-
-        .close-btn:hover {
-            color: var(--secondary);
-        }
-
-        .apply-form h2 {
-            text-align: center;
-            margin-bottom: 2rem;
-            color: var(--primary);
-            font-size: 1.6rem;
+        .application-form.active {
+            display: block;
         }
 
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            color: var(--dark);
-            font-weight: 600;
-            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2c3e50;
         }
 
         .form-group input,
@@ -423,62 +246,118 @@
         .form-group textarea {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e1e5eb;
-            border-radius: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             font-size: 1rem;
-            transition: border-color 0.3s;
             font-family: inherit;
         }
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
-        }
-
         .form-group textarea {
-            height: 80px;
+            height: 100px;
             resize: vertical;
         }
 
-        .file-input {
-            padding: 10px;
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .file-upload {
+            border: 2px dashed #ddd;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: #e74c3c;
+        }
+
+        .file-upload i {
+            font-size: 2rem;
+            color: #e74c3c;
+            margin-bottom: 10px;
         }
 
         .submit-btn {
-            width: 100%;
-            background: linear-gradient(135deg, var(--primary), #234a8c);
+            background: #27ae60;
             color: white;
             border: none;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 1.1rem;
+            padding: 12px 30px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            margin-top: 1rem;
+            font-size: 1rem;
+            transition: background 0.3s;
         }
 
         .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(44, 90, 160, 0.3);
+            background: #219a52;
+        }
+
+        .close-form {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+
+        /* Login Popup */
+        .login-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
         }
 
         /* Footer */
         .footer {
-            background: var(--dark);
+            background: #34495e;
             color: white;
-            padding: 3rem 0;
+            padding: 2rem 0;
             text-align: center;
         }
 
         .social-icons {
             display: flex;
             justify-content: center;
-            gap: 1.5rem;
-            margin: 2rem 0;
+            gap: 1rem;
+            margin: 1rem 0;
         }
 
         .social-icons a {
@@ -488,15 +367,14 @@
         }
 
         .social-icons a:hover {
-            color: var(--secondary);
+            color: #e74c3c;
         }
 
-        /* Message Styles */
+        /* Messages */
         .message {
             padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
+            margin: 10px 0;
+            border-radius: 5px;
             display: none;
         }
 
@@ -512,172 +390,126 @@
             border: 1px solid #f5c6cb;
         }
 
-        /* Mobile Responsive */
+        /* Responsive */
         @media (max-width: 768px) {
-            .hamburger {
-                display: flex;
+            .navbar {
+                padding: 1rem;
             }
 
             .nav-menu {
-                position: fixed;
-                left: -100%;
-                top: 70px;
-                flex-direction: column;
-                background: white;
-                width: 100%;
-                text-align: center;
-                transition: 0.3s;
-                box-shadow: 0 10px 27px rgba(0,0,0,0.05);
-                padding: 2rem 0;
+                display: none;
             }
 
-            .nav-menu.active {
-                left: 0;
-            }
-
-            .header-buttons {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .career-hero {
-                padding: 150px 0 80px;
-                background-attachment: scroll;
-            }
-
-            .career-hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .career-hero p {
-                font-size: 1.1rem;
-            }
-
-            .hero-stats {
-                gap: 2rem;
-            }
-
-            .stat-number {
+            .hero-content h1 {
                 font-size: 2rem;
             }
 
-            .section-title {
-                font-size: 2rem;
+            .form-row {
+                grid-template-columns: 1fr;
             }
 
             .jobs-grid {
                 grid-template-columns: 1fr;
             }
-
-            .job-card {
-                margin: 0 10px;
-            }
-
-            .apply-form {
-                padding: 2rem;
-                margin: 20px;
-            }
-
-            .job-header {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 1rem;
-            }
-
-            .logo-text {
-                font-size: 1.2rem;
-            }
-
-            .career-hero {
-                padding: 130px 0 60px;
-            }
-
-            .career-hero h1 {
-                font-size: 2rem;
-            }
-
-            .hero-stats {
-                gap: 1.5rem;
-            }
-
-            .stat-item {
-                flex: 1;
-                min-width: 120px;
-            }
-
-            .apply-form {
-                padding: 1.5rem;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Header Section -->
+    <!-- Header -->
     <header class="header">
         <nav class="navbar">
             <div class="nav-brand">
-                <div class="logo">এ</div>
-                <span class="logo-text">একতা ফাউন্ডেশন</span>
+                <div class="logo">একতা</div>
+                <span class="logo-text">ফাউন্ডেশন</span>
             </div>
             
             <ul class="nav-menu">
-                <li><a href="index.html" class="nav-link">হোম</a></li>
-                <li><a href="index.html#about" class="nav-link">আমাদের সম্পর্কে</a></li>
-                <li><a href="index.html#contact" class="nav-link">যোগাযোগ</a></li>
-                <li><a href="career.html" class="nav-link active">ক্যারিয়ার</a></li>
+                <li class="nav-item">
+                    <a href="index.html" class="nav-link">হোম</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html#about" class="nav-link">আমাদের সম্পর্কে</a>
+                </li>
+                <li class="nav-item">
+                    <a href="index.html#contact" class="nav-link">যোগাযোগ</a>
+                </li>
+                <li class="nav-item">
+                    <a href="career.html" class="nav-link active">ক্যারিয়ার</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link login-trigger">লগইন</a>
+                </li>
             </ul>
-
-            <div class="header-buttons">
-                <button class="apply-now-btn" onclick="openQuickApply()">
-                    <i class="fas fa-edit"></i> এপ্লাই নাও
-                </button>
-                <button class="login-btn" onclick="openAdminLogin()">
-                    <i class="fas fa-sign-in-alt"></i> অ্যাডমিন
-                </button>
-            </div>
-
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
         </nav>
     </header>
 
-    <!-- Hero Section with Background Photo -->
+    <!-- Career Hero Section with Photo -->
     <section class="career-hero">
-        <div class="container">
+        <img src="" alt="Career Banner" class="hero-background" id="heroBackground">
+        <div class="hero-content">
             <h1>আপনার ক্যারিয়ার শুরু হোক আমাদের সাথে</h1>
-            <p>আদিবাসী উন্নয়নে আপনার দক্ষতা কাজে লাগান এবং সামাজিক পরিবর্তনের অংশ হোন। আমাদের ডেডিকেটেড টিমে যোগ দিন।</p>
-            
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <div class="stat-number" id="activeJobs">০</div>
-                    <div class="stat-label">সক্রিয় চাকুরি</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">৫০+</div>
-                    <div class="stat-label">সফল নিয়োগ</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">১০+</div>
-                    <div class="stat-label">বিভাগ</div>
-                </div>
-            </div>
+            <p>আদিবাসী উন্নয়নে আপনার দক্ষতা কাজে লাগান এবং সামাজিক পরিবর্তনের অংশ হোন</p>
+            <button class="apply-hero-btn" onclick="openApplicationForm()">এখনই আবেদন করুন</button>
         </div>
     </section>
 
-    <!-- Jobs Section -->
-    <section class="jobs-section">
+    <!-- Job Posts Section -->
+    <section class="job-posts">
         <div class="container">
             <h2 class="section-title">বর্তমান চাকুরির সুযোগ</h2>
+            
+            <div id="message" class="message"></div>
+            
             <div class="jobs-grid" id="jobsGrid">
-                <!-- Jobs will be loaded here dynamically -->
+                <!-- Jobs will be loaded from Firebase -->
+            </div>
+
+            <!-- Application Form -->
+            <div class="application-form" id="applicationForm">
+                <h3>চাকুরির জন্য আবেদন করুন</h3>
+                <form id="jobApplicationForm">
+                    <input type="hidden" id="selectedJobId">
+                    <input type="hidden" id="selectedJobTitle">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="applicantName">পুরো নাম *</label>
+                            <input type="text" id="applicantName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="applicantPhone">ফোন নম্বর *</label>
+                            <input type="tel" id="applicantPhone" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="applicantAddress">ঠিকানা *</label>
+                        <input type="text" id="applicantAddress" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="applicantPosition">পদের নাম *</label>
+                        <input type="text" id="applicantPosition" required readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="applicantCV">সিভি আপলোড *</label>
+                        <div class="file-upload" onclick="document.getElementById('cvFile').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>সিভি আপলোড করুন (PDF, DOC, DOCX)</p>
+                            <input type="file" id="cvFile" accept=".pdf,.doc,.docx" style="display: none;" required>
+                        </div>
+                        <small id="fileName"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="aboutYou">আপনার সম্পর্কে (ঐচ্ছিক)</label>
+                        <textarea id="aboutYou" placeholder="আপনার দক্ষতা, অভিজ্ঞতা এবং আগ্রহ সম্পর্কে লিখুন..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">আবেদন জমা দিন</button>
+                    <button type="button" class="close-form" onclick="closeApplicationForm()">বাতিল</button>
+                </form>
             </div>
         </div>
     </section>
@@ -690,76 +522,30 @@
                 <a href="#"><i class="fab fa-twitter"></i></a>
                 <a href="#"><i class="fab fa-instagram"></i></a>
                 <a href="#"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-youtube"></i></a>
             </div>
             <p>&copy; ২০২৪ একতা ফাউন্ডেশন। সকল স্বত্ব সংরক্ষিত।</p>
-            <p style="margin-top: 1rem; opacity: 0.7; font-size: 0.9rem;">আদিবাসী উন্নয়ন ও সাহায্য সংস্থা</p>
         </div>
     </footer>
 
-    <!-- Quick Apply Form Popup -->
-    <div class="apply-popup" id="quickApplyPopup">
-        <div class="apply-form">
-            <span class="close-btn" onclick="closeQuickApply()">&times;</span>
-            <h2>দ্রুত আবেদন করুন</h2>
-            
-            <div id="quickApplyMessage" class="message"></div>
-            
-            <form id="quickApplyForm">
+    <!-- Login Popup -->
+    <div class="login-popup" id="loginPopup">
+        <div class="login-form">
+            <span class="close-btn" onclick="closeLogin()">&times;</span>
+            <h2>ভলান্টিয়ার লগইন</h2>
+            <form id="loginForm">
                 <div class="form-group">
-                    <label for="quickName">আপনার নাম *</label>
-                    <input type="text" id="quickName" required>
+                    <label for="loginEmail">ইমেইল:</label>
+                    <input type="email" id="loginEmail" required>
                 </div>
-
                 <div class="form-group">
-                    <label for="quickMobile">মোবাইল নম্বর *</label>
-                    <input type="tel" id="quickMobile" required>
+                    <label for="loginPassword">পাসওয়ার্ড:</label>
+                    <input type="password" id="loginPassword" required>
                 </div>
-
-                <div class="form-group">
-                    <label for="quickPosition">পদবি নির্বাচন করুন *</label>
-                    <select id="quickPosition" required>
-                        <option value="">পদবি নির্বাচন করুন</option>
-                        <!-- Positions will be loaded dynamically -->
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="quickCV">সিভি আপলোড *</label>
-                    <input type="file" id="quickCV" accept=".pdf,.doc,.docx" required class="file-input">
-                    <small style="color: #666; font-size: 0.8rem;">PDF, DOC, DOCX ফাইল (সর্বোচ্চ 5MB)</small>
-                </div>
-
-                <button type="submit" class="submit-btn">
-                    <i class="fas fa-paper-plane"></i> আবেদন জমা দিন
-                </button>
+                <button type="submit" class="submit-btn" style="width: 100%;">লগইন</button>
             </form>
-        </div>
-    </div>
-
-    <!-- Admin Login Popup -->
-    <div class="apply-popup" id="adminLoginPopup">
-        <div class="apply-form">
-            <span class="close-btn" onclick="closeAdminLogin()">&times;</span>
-            <h2>অ্যাডমিন লগইন</h2>
-            
-            <div id="adminLoginMessage" class="message"></div>
-            
-            <form id="adminLoginForm">
-                <div class="form-group">
-                    <label for="adminEmail">ইমেইল</label>
-                    <input type="email" id="adminEmail" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="adminPassword">পাসওয়ার্ড</label>
-                    <input type="password" id="adminPassword" required>
-                </div>
-
-                <button type="submit" class="submit-btn">
-                    <i class="fas fa-sign-in-alt"></i> লগইন করুন
-                </button>
-            </form>
+            <p style="text-align: center; margin-top: 15px;">
+                অ্যাডমিন? <a href="career-admin.html" style="color: #e74c3c;">এখানে ক্লিক করুন</a>
+            </p>
         </div>
     </div>
 
@@ -769,290 +555,219 @@
             apiKey: "AIzaSyDNa9egoLhBl2xXYE-bsJuU0f_ih-Or0e0",
             authDomain: "ekota-foundation.firebaseapp.com",
             projectId: "ekota-foundation",
-            storageBucket: "ekota-foundation.appspot.com",
+            storageBucket: "ekota-foundation.firebasestorage.app",
             messagingSenderId: "296231153969",
             appId: "1:296231153969:web:8862f39394c64c4ea90010"
         };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        // Global variables
-        let currentJobId = null;
-        let availablePositions = [];
+        // DOM Elements
+        const jobsGrid = document.getElementById('jobsGrid');
+        const applicationForm = document.getElementById('applicationForm');
+        const jobApplicationForm = document.getElementById('jobApplicationForm');
+        const messageDiv = document.getElementById('message');
+        const heroBackground = document.getElementById('heroBackground');
+        const loginPopup = document.getElementById('loginPopup');
+        const loginForm = document.getElementById('loginForm');
+        const cvFile = document.getElementById('cvFile');
+        const fileName = document.getElementById('fileName');
 
-        // Mobile Menu Toggle
-        const hamburger = document.querySelector('.hamburger');
-        const navMenu = document.querySelector('.nav-menu');
+        // Load Hero Photo from Firebase
+        async function loadHeroPhoto() {
+            try {
+                const doc = await db.collection('careerSettings').doc('heroPhoto').get();
+                if (doc.exists && doc.data().photoUrl) {
+                    heroBackground.src = doc.data().photoUrl;
+                }
+            } catch (error) {
+                console.error('Error loading hero photo:', error);
+            }
+        }
 
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-
-        // Close mobile menu when clicking on a link
-        document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
-        }));
-
-        // Load jobs from Firestore
+        // Load Jobs from Firebase
         async function loadJobs() {
             try {
-                const snapshot = await db.collection('careerJobs')
+                const snapshot = await db.collection('jobs')
                     .where('status', '==', 'active')
                     .orderBy('createdAt', 'desc')
                     .get();
                 
-                const jobsGrid = document.getElementById('jobsGrid');
                 jobsGrid.innerHTML = '';
-                availablePositions = [];
+
+                snapshot.forEach(doc => {
+                    const job = doc.data();
+                    
+                    const jobCard = `
+                        <div class="job-card">
+                            <h3 class="job-title">${job.position}</h3>
+                            <div class="job-meta">
+                                <span><i class="fas fa-map-marker-alt"></i> ${job.location}</span>
+                                <span><i class="fas fa-money-bill"></i> ${job.salary}</span>
+                            </div>
+                            <div class="job-description">
+                                <strong>দায়িত্ব:</strong><br>
+                                ${job.responsibility}
+                            </div>
+                            <div class="job-meta">
+                                <span><i class="fas fa-user"></i> ${job.name}</span>
+                                <span><i class="fas fa-phone"></i> ${job.phone}</span>
+                            </div>
+                            <button class="apply-btn" onclick="openJobApplication('${doc.id}', '${job.position}')">
+                                আবেদন করুন
+                            </button>
+                        </div>
+                    `;
+                    jobsGrid.innerHTML += jobCard;
+                });
 
                 if (snapshot.empty) {
                     jobsGrid.innerHTML = `
                         <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                            <h3 style="color: #666; margin-bottom: 1rem;">বর্তমানে কোনো চাকুরির সুযোগ নেই</h3>
-                            <p>ভবিষ্যতে নতুন চাকুরির সুযোগের জন্য আমাদের ওয়েবসাইটটি দেখতে থাকুন।</p>
+                            <h3>বর্তমানে কোন চাকুরির সুযোগ নেই</h3>
+                            <p>ভবিষ্যতে নতুন চাকুরির জন্য আমাদের সাথে থাকুন</p>
                         </div>
                     `;
-                    document.getElementById('activeJobs').textContent = '০';
-                    return;
                 }
-
-                let activeJobsCount = 0;
-
-                snapshot.forEach(doc => {
-                    const job = doc.data();
-                    const jobId = doc.id;
-                    
-                    if (job.status === 'active') {
-                        activeJobsCount++;
-                        availablePositions.push({
-                            id: jobId,
-                            name: job.postName
-                        });
-                    }
-                    
-                    // Default image if no image uploaded
-                    const jobImage = job.jobImage || `
-                        <div class="job-image">
-                            <i class="fas fa-briefcase"></i>
-                        </div>
-                    `;
-
-                    const jobCard = `
-                        <div class="job-card">
-                            ${job.jobImageUrl ? 
-                                `<div class="job-image">
-                                    <img src="${job.jobImageUrl}" alt="${job.postName}" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\\'job-image\\'><i class=\\'fas fa-briefcase\\'></i></div>'">
-                                </div>` :
-                                `<div class="job-image">
-                                    <i class="fas fa-briefcase"></i>
-                                </div>`
-                            }
-                            
-                            <div class="job-content">
-                                <div class="job-header">
-                                    <div class="job-title">
-                                        <h3>${job.postName}</h3>
-                                        <p style="color: #666; margin-bottom: 1rem;">${job.authorityName}</p>
-                                    </div>
-                                </div>
-                                
-                                <div class="job-meta">
-                                    <span class="job-tag"><i class="fas fa-map-marker-alt"></i> ${job.jobLocation}</span>
-                                    <span class="job-tag"><i class="fas fa-money-bill-wave"></i> ${job.salary}</span>
-                                    <span class="job-tag"><i class="fas fa-briefcase"></i> ${job.jobType}</span>
-                                </div>
-                                
-                                <div class="job-details">
-                                    <div class="detail-item">
-                                        <i class="fas fa-building"></i>
-                                        <span>${job.authorityName}</span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <i class="fas fa-clock"></i>
-                                        <span>আবেদনের শেষ তারিখ: ${job.deadline || 'নির্ধারিত নয়'}</span>
-                                    </div>
-                                </div>
-                                
-                                ${job.responsibility ? `
-                                <div class="job-points">
-                                    <div class="point-title">দায়িত্বসমূহ:</div>
-                                    <ul class="point-list">
-                                        ${job.responsibility.split('\n').map(point => `<li>${point.trim()}</li>`).join('')}
-                                    </ul>
-                                </div>
-                                ` : ''}
-                                
-                                ${job.qualification ? `
-                                <div class="job-points">
-                                    <div class="point-title">যৌগ্যতা:</div>
-                                    <ul class="point-list">
-                                        ${job.qualification.split('\n').map(point => `<li>${point.trim()}</li>`).join('')}
-                                    </ul>
-                                </div>
-                                ` : ''}
-                                
-                                <button class="apply-btn" onclick="openQuickApply('${jobId}')">
-                                    <i class="fas fa-edit"></i> আবেদন করুন
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    
-                    jobsGrid.innerHTML += jobCard;
-                });
-
-                document.getElementById('activeJobs').textContent = activeJobsCount;
-                updatePositionDropdown();
 
             } catch (error) {
                 console.error('Error loading jobs:', error);
-                document.getElementById('jobsGrid').innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
-                        <h3 style="color: #e74c3c; margin-bottom: 1rem;">ডেটা লোড করতে সমস্যা</h3>
-                        <p>দয়া করে পৃষ্ঠাটি রিফ্রেশ করুন।</p>
-                    </div>
-                `;
+                showMessage('চাকুরির তালিকা লোড করতে সমস্যা হয়েছে', 'error');
             }
         }
 
-        // Update position dropdown with available jobs
-        function updatePositionDropdown() {
-            const positionSelect = document.getElementById('quickPosition');
-            positionSelect.innerHTML = '<option value="">পদবি নির্বাচন করুন</option>';
-            
-            availablePositions.forEach(position => {
-                const option = document.createElement('option');
-                option.value = position.id;
-                option.textContent = position.name;
-                positionSelect.appendChild(option);
+        // Open Application Form for Hero Button
+        function openApplicationForm() {
+            document.getElementById('selectedJobId').value = '';
+            document.getElementById('selectedJobTitle').value = 'সাধারণ আবেদন';
+            document.getElementById('applicantPosition').value = 'সাধারণ আবেদন';
+            applicationForm.classList.add('active');
+            window.scrollTo({
+                top: applicationForm.offsetTop - 100,
+                behavior: 'smooth'
             });
         }
 
-        // Open quick apply form
-        function openQuickApply(jobId = '') {
-            if (jobId) {
-                document.getElementById('quickPosition').value = jobId;
+        // Open Application Form for Specific Job
+        function openJobApplication(jobId, jobTitle) {
+            document.getElementById('selectedJobId').value = jobId;
+            document.getElementById('selectedJobTitle').value = jobTitle;
+            document.getElementById('applicantPosition').value = jobTitle;
+            applicationForm.classList.add('active');
+            window.scrollTo({
+                top: applicationForm.offsetTop - 100,
+                behavior: 'smooth'
+            });
+        }
+
+        // Close Application Form
+        function closeApplicationForm() {
+            applicationForm.classList.remove('active');
+            jobApplicationForm.reset();
+            fileName.textContent = '';
+        }
+
+        // File Upload Handler
+        cvFile.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                fileName.textContent = e.target.files[0].name;
             }
-            document.getElementById('quickApplyMessage').style.display = 'none';
-            document.getElementById('quickApplyForm').reset();
-            document.getElementById('quickApplyPopup').style.display = 'flex';
-        }
+        });
 
-        // Close quick apply form
-        function closeQuickApply() {
-            document.getElementById('quickApplyPopup').style.display = 'none';
-        }
-
-        // Open admin login
-        function openAdminLogin() {
-            document.getElementById('adminLoginPopup').style.display = 'flex';
-        }
-
-        // Close admin login
-        function closeAdminLogin() {
-            document.getElementById('adminLoginPopup').style.display = 'none';
-        }
-
-        // Show message function
-        function showMessage(elementId, message, type) {
-            const messageDiv = document.getElementById(elementId);
-            messageDiv.textContent = message;
-            messageDiv.className = `message ${type}`;
-            messageDiv.style.display = 'block';
-        }
-
-        // Quick apply form submission
-        document.getElementById('quickApplyForm').addEventListener('submit', async function(e) {
+        // Submit Job Application
+        jobApplicationForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const positionId = document.getElementById('quickPosition').value;
-            const positionName = document.getElementById('quickPosition').options[document.getElementById('quickPosition').selectedIndex].text;
-            
-            if (!positionId) {
-                showMessage('quickApplyMessage', 'দয়া করে একটি পদবি নির্বাচন করুন।', 'error');
+            const cvFile = document.getElementById('cvFile').files[0];
+            if (!cvFile) {
+                showMessage('দয়া করে আপনার সিভি আপলোড করুন', 'error');
                 return;
             }
 
-            const formData = {
-                name: document.getElementById('quickName').value,
-                mobile: document.getElementById('quickMobile').value,
-                positionId: positionId,
-                positionName: positionName,
+            const applicationData = {
+                jobId: document.getElementById('selectedJobId').value,
+                jobTitle: document.getElementById('selectedJobTitle').value,
+                name: document.getElementById('applicantName').value,
+                phone: document.getElementById('applicantPhone').value,
+                address: document.getElementById('applicantAddress').value,
+                aboutYou: document.getElementById('aboutYou').value,
                 status: 'pending',
                 appliedAt: new Date()
             };
 
-            const cvFile = document.getElementById('quickCV').files[0];
-            
-            if (!cvFile) {
-                showMessage('quickApplyMessage', 'দয়া করে আপনার সিভি আপলোড করুন।', 'error');
-                return;
-            }
-
-            // File size validation (5MB)
-            if (cvFile.size > 5 * 1024 * 1024) {
-                showMessage('quickApplyMessage', 'সিভি ফাইলের সাইজ 5MB এর বেশি হতে পারবে না।', 'error');
-                return;
-            }
-
             try {
                 // Upload CV to Firebase Storage
-                const storageRef = storage.ref();
-                const cvRef = storageRef.child(`career-cvs/${Date.now()}_${cvFile.name}`);
+                const cvRef = storage.ref().child(`cvs/${Date.now()}_${cvFile.name}`);
                 const uploadTask = await cvRef.put(cvFile);
                 const cvUrl = await uploadTask.ref.getDownloadURL();
 
-                formData.cvUrl = cvUrl;
-                formData.cvFileName = cvFile.name;
-                
-                // Save application to Firestore
-                await db.collection('careerApplications').add(formData);
-                
-                showMessage('quickApplyMessage', 'আপনার আবেদন সফলভাবে জমা হয়েছে! আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।', 'success');
-                
-                // Reset form and close after 3 seconds
-                setTimeout(() => {
-                    closeQuickApply();
-                }, 3000);
-                
+                // Add CV URL to application data
+                applicationData.cvUrl = cvUrl;
+                applicationData.cvName = cvFile.name;
+
+                // Save to Firestore
+                await db.collection('jobApplications').add(applicationData);
+                showMessage('আপনার আবেদন সফলভাবে জমা হয়েছে!', 'success');
+                closeApplicationForm();
             } catch (error) {
-                console.error('Error submitting application:', error);
-                showMessage('quickApplyMessage', 'আবেদন জমা দিতে সমস্যা: ' + error.message, 'error');
+                showMessage('আবেদন জমা করতে সমস্যা: ' + error.message, 'error');
             }
         });
 
-        // Admin login form submission
-        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+        // Login Functions
+        function openLogin() {
+            loginPopup.style.display = 'flex';
+        }
+
+        function closeLogin() {
+            loginPopup.style.display = 'none';
+        }
+
+        // Login form submission
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            // Redirect to career admin page
-            window.location.href = 'career-admin.html';
-        });
-
-        // Close popups when clicking outside
-        document.getElementById('quickApplyPopup').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeQuickApply();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                window.location.href = 'volunteer.html';
+            } catch (error) {
+                showMessage('লগইন ব্যর্থ: ' + error.message, 'error');
             }
         });
 
-        document.getElementById('adminLoginPopup').addEventListener('click', function(e) {
+        // Add click event to login trigger
+        document.querySelector('.login-trigger').addEventListener('click', function(e) {
+            e.preventDefault();
+            openLogin();
+        });
+
+        // Close popup when clicking outside
+        loginPopup.addEventListener('click', function(e) {
             if (e.target === this) {
-                closeAdminLogin();
+                closeLogin();
             }
         });
 
-        // Phone number validation
-        document.getElementById('quickMobile').addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9+]/g, '');
-        });
+        // Show Message
+        function showMessage(message, type) {
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            loadHeroPhoto();
             loadJobs();
         });
     </script>
