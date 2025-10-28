@@ -383,227 +383,197 @@
     </div>
 
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDNa9egoLhBl2xXYE-bsJuU0f_ih-Or0e0",
-            authDomain: "ekota-foundation.firebaseapp.com",
-            projectId: "ekota-foundation",
-            storageBucket: "ekota-foundation.firebasestorage.app",
-            messagingSenderId: "296231153969",
-            appId: "1:296231153969:web:8862f39394c64c4ea90010"
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDNa9egoLhBl2xXYE-bsJuU0f_ih-Or0e0",
+        authDomain: "ekota-foundation.firebaseapp.com",
+        projectId: "ekota-foundation",
+        storageBucket: "ekota-foundation.firebasestorage.app",
+        messagingSenderId: "296231153969",
+        appId: "1:296231153969:web:8862f39394c64c4ea90010"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    // DOM Elements
+    const messageDiv = document.getElementById('message');
+    const applicationsTableBody = document.getElementById('applicationsTableBody');
+    const jobPostForm = document.getElementById('jobPostForm');
+    const heroPhoto = document.getElementById('heroPhoto');
+    const photoPreview = document.getElementById('photoPreview');
+
+    // Check Authentication
+    auth.onAuthStateChanged((user) => {
+        if (!user) {
+            window.location.href = 'index.html';
+        }
+    });
+
+    // Upload Hero Photo - FIXED VERSION
+    heroPhoto.addEventListener('change', function(e) {
+        if (e.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                photoPreview.innerHTML = `
+                    <img src="${e.target.result}" style="max-width: 100%; max-height: 300px; border-radius: 10px;">
+                    <p><small>প্রিভিউ</small></p>
+                `;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    async function uploadHeroPhoto() {
+        const file = heroPhoto.files[0];
+        if (!file) {
+            showMessage('দয়া করে একটি ফটো সিলেক্ট করুন', 'error');
+            return;
+        }
+
+        try {
+            // Show loading message
+            showMessage('ফটো আপলোড হচ্ছে...', 'success');
+            
+            // Upload to Firebase Storage
+            const photoRef = storage.ref().child(`career-hero/${Date.now()}_${file.name}`);
+            const uploadTask = photoRef.put(file);
+            
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    // Progress monitoring (optional)
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    console.log('Upload is ' + progress + '% done');
+                },
+                (error) => {
+                    showMessage('আপলোড ব্যর্থ: ' + error.message, 'error');
+                },
+                async () => {
+                    // Upload completed successfully
+                    const photoUrl = await uploadTask.snapshot.ref.getDownloadURL();
+
+                    // Save URL to Firestore
+                    await db.collection('careerSettings').doc('heroPhoto').set({
+                        photoUrl: photoUrl,
+                        updatedAt: new Date()
+                    });
+
+                    showMessage('ফটো সফলভাবে আপলোড হয়েছে!', 'success');
+                    photoPreview.innerHTML = '';
+                    heroPhoto.value = '';
+                }
+            );
+
+        } catch (error) {
+            showMessage('ফটো আপলোড করতে সমস্যা: ' + error.message, 'error');
+        }
+    }
+
+    // Post Manual Job - FIXED VERSION
+    jobPostForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const jobData = {
+            name: document.getElementById('jobName').value,
+            phone: document.getElementById('jobPhone').value,
+            position: document.getElementById('jobPosition').value,
+            location: document.getElementById('jobLocation').value,
+            salary: document.getElementById('jobSalary').value,
+            responsibility: document.getElementById('jobResponsibility').value,
+            status: 'active',
+            createdAt: new Date(),
+            type: 'manual' // Add type to distinguish
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const storage = firebase.storage();
-
-        // DOM Elements
-        const messageDiv = document.getElementById('message');
-        const applicationsTableBody = document.getElementById('applicationsTableBody');
-        const jobPostForm = document.getElementById('jobPostForm');
-        const heroPhoto = document.getElementById('heroPhoto');
-        const photoPreview = document.getElementById('photoPreview');
-
-        // Check Authentication
-        auth.onAuthStateChanged((user) => {
-            if (!user) {
-                window.location.href = 'index.html';
-            }
-        });
-
-        // Menu Navigation
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.addEventListener('click', function() {
-                document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                
-                this.classList.add('active');
-                document.getElementById(this.dataset.target).classList.add('active');
-                
-                if (this.dataset.target === 'applications') {
-                    loadApplications();
-                }
-            });
-        });
-
-        // Upload Hero Photo
-        heroPhoto.addEventListener('change', function(e) {
-            if (e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    photoPreview.innerHTML = `
-                        <img src="${e.target.result}" style="max-width: 100%; max-height: 300px; border-radius: 10px;">
-                        <p><small>প্রিভিউ</small></p>
-                    `;
-                }
-                reader.readAsDataURL(e.target.files[0]);
-            }
-        });
-
-        async function uploadHeroPhoto() {
-            const file = heroPhoto.files[0];
-            if (!file) {
-                showMessage('দয়া করে একটি ফটো সিলেক্ট করুন', 'error');
-                return;
-            }
-
-            try {
-                // Upload to Firebase Storage
-                const photoRef = storage.ref().child(`career-hero/${Date.now()}_${file.name}`);
-                const uploadTask = await photoRef.put(file);
-                const photoUrl = await uploadTask.ref.getDownloadURL();
-
-                // Save URL to Firestore
-                await db.collection('careerSettings').doc('heroPhoto').set({
-                    photoUrl: photoUrl,
-                    updatedAt: new Date()
-                });
-
-                showMessage('ফটো সফলভাবে আপলোড হয়েছে!', 'success');
-            } catch (error) {
-                showMessage('ফটো আপলোড করতে সমস্যা: ' + error.message, 'error');
-            }
-        }
-
-        // Post Manual Job
-        jobPostForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
+        try {
+            // Show loading message
+            showMessage('জব পোস্ট তৈরি হচ্ছে...', 'success');
             
-            const jobData = {
-                name: document.getElementById('jobName').value,
-                phone: document.getElementById('jobPhone').value,
-                position: document.getElementById('jobPosition').value,
-                location: document.getElementById('jobLocation').value,
-                salary: document.getElementById('jobSalary').value,
-                responsibility: document.getElementById('jobResponsibility').value,
-                status: 'active',
-                createdAt: new Date()
-            };
+            // Add to Firestore
+            const docRef = await db.collection('jobs').add(jobData);
+            
+            showMessage('জব পোস্ট সফলভাবে তৈরি হয়েছে!', 'success');
+            jobPostForm.reset();
+            
+            // Log for debugging
+            console.log('Job posted with ID:', docRef.id);
+            console.log('Job data:', jobData);
+            
+        } catch (error) {
+            console.error('Error posting job:', error);
+            showMessage('জব পোস্ট করতে সমস্যা: ' + error.message, 'error');
+        }
+    });
 
-            try {
-                await db.collection('jobs').add(jobData);
-                showMessage('জব পোস্ট সফলভাবে তৈরি হয়েছে!', 'success');
-                jobPostForm.reset();
-            } catch (error) {
-                showMessage('জব পোস্ট করতে সমস্যা: ' + error.message, 'error');
-            }
-        });
-
-        // Load Applications
-        async function loadApplications() {
-            try {
-                const snapshot = await db.collection('jobApplications')
-                    .orderBy('appliedAt', 'desc')
-                    .get();
-                
-                applicationsTableBody.innerHTML = '';
-                
-                snapshot.forEach(doc => {
-                    const application = doc.data();
-                    const row = `
-                        <tr>
-                            <td>${application.name}</td>
-                            <td>${application.phone}</td>
-                            <td>${application.jobTitle}</td>
-                            <td>${application.address}</td>
-                            <td>
-                                ${application.cvUrl ? 
-                                    `<button class="action-btn btn-download" onclick="downloadCV('${application.cvUrl}', '${application.cvName}')">
-                                        সিভি ডাউনলোড
-                                    </button>` : 
-                                    'N/A'
-                                }
-                            </td>
-                            <td class="status-${application.status}">${getStatusText(application.status)}</td>
-                            <td>
-                                ${application.status === 'pending' ? `
-                                    <button class="action-btn btn-approve" onclick="updateApplicationStatus('${doc.id}', 'approved')">
-                                        অ্যাপ্রুভ
-                                    </button>
-                                    <button class="action-btn btn-reject" onclick="updateApplicationStatus('${doc.id}', 'rejected')">
-                                        রিজেক্ট
-                                    </button>
-                                ` : ''}
-                                <button class="action-btn btn-delete" onclick="deleteApplication('${doc.id}')">
-                                    ডিলিট
+    // Load Applications
+    async function loadApplications() {
+        try {
+            const snapshot = await db.collection('jobApplications')
+                .orderBy('appliedAt', 'desc')
+                .get();
+            
+            applicationsTableBody.innerHTML = '';
+            
+            snapshot.forEach(doc => {
+                const application = doc.data();
+                const row = `
+                    <tr>
+                        <td>${application.name}</td>
+                        <td>${application.phone}</td>
+                        <td>${application.jobTitle}</td>
+                        <td>${application.address}</td>
+                        <td>
+                            ${application.cvUrl ? 
+                                `<button class="action-btn btn-download" onclick="downloadCV('${application.cvUrl}', '${application.cvName}')">
+                                    সিভি ডাউনলোড
+                                </button>` : 
+                                'N/A'
+                            }
+                        </td>
+                        <td class="status-${application.status}">${getStatusText(application.status)}</td>
+                        <td>
+                            ${application.status === 'pending' ? `
+                                <button class="action-btn btn-approve" onclick="updateApplicationStatus('${doc.id}', 'approved')">
+                                    অ্যাপ্রুভ
                                 </button>
-                            </td>
-                        </tr>
-                    `;
-                    applicationsTableBody.innerHTML += row;
-                });
-            } catch (error) {
-                console.error('Error loading applications:', error);
-                showMessage('আবেদন লোড করতে সমস্যা', 'error');
-            }
-        }
-
-        // Update Application Status
-        async function updateApplicationStatus(applicationId, status) {
-            try {
-                await db.collection('jobApplications').doc(applicationId).update({
-                    status: status
-                });
-                showMessage(`আবেদন ${getStatusText(status)} করা হয়েছে`, 'success');
-                loadApplications();
-            } catch (error) {
-                showMessage('স্ট্যাটাস আপডেট করতে সমস্যা: ' + error.message, 'error');
-            }
-        }
-
-        // Delete Application
-        async function deleteApplication(applicationId) {
-            if (confirm('আপনি কি নিশ্চিত এই আবেদন ডিলিট করতে চান?')) {
-                try {
-                    await db.collection('jobApplications').doc(applicationId).delete();
-                    showMessage('আবেদন ডিলিট করা হয়েছে', 'success');
-                    loadApplications();
-                } catch (error) {
-                    showMessage('ডিলিট করতে সমস্যা: ' + error.message, 'error');
-                }
-            }
-        }
-
-        // Download CV
-        function downloadCV(cvUrl, fileName) {
-            window.open(cvUrl, '_blank');
-        }
-
-        // Helper Functions
-        function getStatusText(status) {
-            const statusMap = {
-                'pending': 'পেন্ডিং',
-                'approved': 'অ্যাপ্রুভড',
-                'rejected': 'রিজেক্টেড'
-            };
-            return statusMap[status] || status;
-        }
-
-        function showMessage(message, type) {
-            messageDiv.textContent = message;
-            messageDiv.className = `message ${type}`;
-            messageDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 5000);
-        }
-
-        function logout() {
-            auth.signOut().then(() => {
-                window.location.href = 'index.html';
+                                <button class="action-btn btn-reject" onclick="updateApplicationStatus('${doc.id}', 'rejected')">
+                                    রিজেক্ট
+                                </button>
+                            ` : ''}
+                            <button class="action-btn btn-delete" onclick="deleteApplication('${doc.id}')">
+                                ডিলিট
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                applicationsTableBody.innerHTML += row;
             });
+        } catch (error) {
+            console.error('Error loading applications:', error);
+            showMessage('আবেদন লোড করতে সমস্যা', 'error');
         }
+    }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Auto load applications if on applications tab
-            if (document.getElementById('applications').classList.contains('active')) {
-                loadApplications();
-            }
-        });
-    </script>
+    // Helper function to check if jobs are being saved
+    async function checkJobs() {
+        try {
+            const snapshot = await db.collection('jobs').get();
+            console.log('Total jobs in database:', snapshot.size);
+            snapshot.forEach(doc => {
+                console.log('Job:', doc.id, doc.data());
+            });
+        } catch (error) {
+            console.error('Error checking jobs:', error);
+        }
+    }
+
+    // Call this function to debug
+    checkJobs();
+
+    // ... rest of the code remains same
+</script>
 </body>
 </html>
