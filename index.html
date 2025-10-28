@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>একতা ফাউন্ডেশন - আদিবাসী উন্নয়ন</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <style>
+        /* আপনার existing CSS এখানে রাখুন */
         * {
             margin: 0;
             padding: 0;
@@ -401,6 +404,33 @@
             text-decoration: underline;
         }
 
+        /* Message Styles */
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Loading State */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .hamburger {
@@ -635,6 +665,9 @@
         <div class="login-form">
             <span class="close-btn" onclick="closeLogin()">&times;</span>
             <h2>ভলান্টিয়ার লগইন</h2>
+            
+            <div id="loginMessage" class="message"></div>
+            
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email">ইমেইল ঠিকানা</label>
@@ -644,7 +677,7 @@
                     <label for="password">পাসওয়ার্ড</label>
                     <input type="password" id="password" placeholder="আপনার পাসওয়ার্ড লিখুন" required>
                 </div>
-                <button type="submit" class="submit-btn">
+                <button type="submit" class="submit-btn" id="submitBtn">
                     <i class="fas fa-sign-in-alt"></i> লগইন করুন
                 </button>
             </form>
@@ -655,6 +688,20 @@
     </div>
 
     <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNa9egoLhBl2xXYE-bsJuU0f_ih-Or0e0",
+            authDomain: "ekota-foundation.firebaseapp.com",
+            projectId: "ekota-foundation",
+            storageBucket: "ekota-foundation.appspot.com",
+            messagingSenderId: "296231153969",
+            appId: "1:296231153969:web:8862f39394c64c4ea90010"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
         // Mobile Menu Toggle
         const hamburger = document.querySelector('.hamburger');
         const navMenu = document.querySelector('.nav-menu');
@@ -673,6 +720,7 @@
         // Login Popup Functions
         function openLogin() {
             document.getElementById('loginPopup').style.display = 'flex';
+            document.getElementById('loginMessage').style.display = 'none';
         }
 
         function closeLogin() {
@@ -686,19 +734,86 @@
             }
         });
 
-        // Login form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        // Show message function
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('loginMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+        }
+
+        // Login form submission with Firebase Authentication
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
             
-            // Redirect to volunteer dashboard
-            window.location.href = 'volunteer.html';
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> লগইন হচ্ছে...';
+            submitBtn.classList.add('loading');
+            
+            try {
+                // Firebase Authentication
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Show success message
+                showMessage('লগইন সফল! ভলান্টিয়ার ড্যাশবোর্ডে নিয়ে যাওয়া হচ্ছে...', 'success');
+                
+                // Redirect to volunteer dashboard after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'volunteer.html';
+                }, 2000);
+                
+            } catch (error) {
+                // Reset button state
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> লগইন করুন';
+                submitBtn.classList.remove('loading');
+                
+                // Handle different error cases
+                let errorMessage = 'লগইন করতে সমস্যা হয়েছে।';
+                
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        errorMessage = 'ইমেইল ঠিকানাটি সঠিক নয়।';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage = 'এই একাউন্টটি নিষ্ক্রিয় করা হয়েছে।';
+                        break;
+                    case 'auth/user-not-found':
+                        errorMessage = 'এই ইমেইল দিয়ে কোনো একাউন্ট নেই।';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'পাসওয়ার্ড ভুল হয়েছে।';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'বহুবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।';
+                        break;
+                    default:
+                        errorMessage = 'লগইন করতে সমস্যা: ' + error.message;
+                }
+                
+                showMessage(errorMessage, 'error');
+            }
         });
 
         // Forgot password function
         function forgotPassword() {
-            alert('পাসওয়ার্ড রিসেট করার জন্য দয়া করে অ্যাডমিনের সাথে যোগাযোগ করুন।');
+            const email = document.getElementById('email').value;
+            if (!email) {
+                showMessage('দয়া করে আপনার ইমেইল ঠিকানা লিখুন।', 'error');
+                return;
+            }
+            
+            auth.sendPasswordResetEmail(email)
+                .then(() => {
+                    showMessage('পাসওয়ার্ড রিসেট লিঙ্ক আপনার ইমেইলে পাঠানো হয়েছে।', 'success');
+                })
+                .catch((error) => {
+                    showMessage('পাসওয়ার্ড রিসেট করতে সমস্যা: ' + error.message, 'error');
+                });
         }
 
         // Smooth scrolling for anchor links
@@ -724,6 +839,14 @@
             } else {
                 header.style.background = 'white';
                 header.style.backdropFilter = 'none';
+            }
+        });
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is already logged in, redirect to volunteer dashboard
+                window.location.href = 'volunteer.html';
             }
         });
     </script>
