@@ -10,6 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <style>
+        /* আপনার existing CSS এখানে রাখুন */
         * {
             margin: 0;
             padding: 0;
@@ -812,12 +813,12 @@
     </div>
 
     <script>
-        // Firebase Configuration
+        // Firebase Configuration - PERMANENT SOLUTION
         const firebaseConfig = {
             apiKey: "AIzaSyDNa9egoLhBl2xXYE-bsJuU0f_ih-Or0e0",
             authDomain: "ekota-foundation.firebaseapp.com",
             projectId: "ekota-foundation",
-            storageBucket: "ekota-foundation.firebasestorage.app",
+            storageBucket: "ekota-foundation.appspot.com",
             messagingSenderId: "296231153969",
             appId: "1:296231153969:web:8862f39394c64c4ea90010"
         };
@@ -849,6 +850,13 @@
                     displayUsername.textContent = currentUserData.username;
                     loadMyData();
                     loadMyStatistics();
+                } else {
+                    // If user data not found in Firestore, redirect to login
+                    showMessage('ব্যবহারকারীর তথ্য পাওয়া যায়নি। দয়া করে আবার লগইন করুন।', 'error');
+                    setTimeout(() => {
+                        auth.signOut();
+                        window.location.href = 'index.html';
+                    }, 3000);
                 }
             } else {
                 // Redirect to login if not authenticated
@@ -1062,6 +1070,14 @@
         // Phone number validation
         document.getElementById('phone').addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9+]/g, '');
+        });
+
+        // Error handling for Firebase auth
+        window.addEventListener('error', function(e) {
+            if (e.message.includes('Firebase') || e.message.includes('auth')) {
+                console.error('Firebase Error:', e.error);
+                showMessage('সিস্টেমে সাময়িক সমস্যা। দয়া করে পৃষ্ঠাটি রিফ্রেশ করুন।', 'error');
+            }
         });
     </script>
 </body>
