@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ডেটা সংগ্রহ ফর্ম - একতা ফাউন্ডেশন</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2c5aa0;
+            --secondary: #e74c3c;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--secondary);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--dark);
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+
+        .form-title {
+            color: var(--primary);
+            font-size: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+
+        .form-col {
+            flex: 1;
+            padding: 0 10px;
+            min-width: 250px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--secondary);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.2);
+            outline: none;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+
+        .radio-option input {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #234a8c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--dark);
+            font-size: 14px;
+            margin-top: 20px;
+            opacity: 0.7;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .form-container {
+                padding: 20px 15px;
+            }
+            
+            .form-col {
+                min-width: 100%;
+            }
+            
+            .form-row {
+                margin: 0;
+            }
+            
+            .form-col {
+                padding: 0;
+            }
+            
+            input, select, textarea {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 22px;
+            }
+            
+            .form-title {
+                font-size: 20px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+            
+            .logo {
+                flex-direction: column;
+            }
+            
+            .logo-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-hands-helping"></i>
+                </div>
+                <div>
+                    <h1>একতা ফাউন্ডেশন</h1>
+                    <p class="subtitle">আদিবাসী উন্নয়ন ও সাহায্য সংস্থা</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div class="form-header">
+                <div class="form-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h2 class="form-title">ডেটা সংগ্রহ শুরু করুন</h2>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <form id="dataForm">
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="name" class="required">নাম</label>
+                            <input type="text" id="name" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="phone" class="required">ফোন নম্বর</label>
+                            <input type="tel" id="phone" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="fatherName" class="required">পিতার নাম</label>
+                            <input type="text" id="fatherName" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="motherName" class="required">মাতার নাম</label>
+                            <input type="text" id="motherName" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="age" class="required">বয়স</label>
+                            <input type="number" id="age" min="1" max="120" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="village" class="required">গ্রাম</label>
+                            <input type="text" id="village" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="postUnion" class="required">পোস্ট/ইউনিয়ন</label>
+                            <input type="text" id="postUnion" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="thanaUpazila" class="required">থানা/উপজেলা</label>
+                            <input type="text" id="thanaUpazila" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="zila" class="required">জেলা</label>
+                            <input type="text" id="zila" required>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="livestock" class="required">গবাদি পশু কয়টি আছে?</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="livestock1" name="livestock" value="1টি" required>
+                                    <label for="livestock1">1টি</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="livestock2" name="livestock" value="2টি">
+                                    <label for="livestock2">2টি</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="livestock3" name="livestock" value="3টি">
+                                    <label for="livestock3">3টি</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="livestock4" name="livestock" value="3টির বেশি">
+                                    <label for="livestock4">3টির বেশি</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="livestock5" name="livestock" value="একটাও নেই">
+                                    <label for="livestock5">একটাও নেই</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="foreignTravelGroup">
+                    <label for="foreignTravel">বিদেশে যেতে ইচ্ছুক?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="foreignYes" name="foreignTravel" value="হ্যাঁ">
+                            <label for="foreignYes">হ্যাঁ</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="foreignNo" name="foreignTravel" value="না">
+                            <label for="foreignNo">না</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="comments">মন্তব্য</label>
+                    <textarea id="comments" placeholder="এখানে বিস্তারিত লিখুন..."></textarea>
+                </div>
+
+                <button type="submit" class="btn">
+                    <i class="fas fa-paper-plane"></i> ডেটা জমা দিন
+                </button>
+            </form>
+        </div>
+
+        <div class="footer">
+            <p>একতা ফাউন্ডেশন © ২০২৩ | সকল অধিকার সংরক্ষিত</p>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNa9egoLhBl2xXYE-bsJuU0f_ih-Or0e0",
+            authDomain: "ekota-foundation.firebaseapp.com",
+            projectId: "ekota-foundation",
+            storageBucket: "ekota-foundation.firebasestorage.app",
+            messagingSenderId: "296231153969",
+            appId: "1:296231153969:web:8862f39394c64c4ea90010"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // DOM Elements
+        const ageInput = document.getElementById('age');
+        const foreignTravelGroup = document.getElementById('foreignTravelGroup');
+        const dataForm = document.getElementById('dataForm');
+        const messageDiv = document.getElementById('message');
+
+        // Show/hide foreign travel question based on age
+        ageInput.addEventListener('input', function() {
+            const age = parseInt(this.value);
+            if (age >= 28) {
+                foreignTravelGroup.classList.remove('hidden');
+            } else {
+                foreignTravelGroup.classList.add('hidden');
+                // Reset foreign travel selection if hidden
+                document.querySelectorAll('input[name="foreignTravel"]').forEach(radio => {
+                    radio.checked = false;
+                });
+            }
+        });
+
+        // Form submission
+        dataForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const formData = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                fatherName: document.getElementById('fatherName').value,
+                motherName: document.getElementById('motherName').value,
+                age: parseInt(document.getElementById('age').value),
+                village: document.getElementById('village').value,
+                postUnion: document.getElementById('postUnion').value,
+                thanaUpazila: document.getElementById('thanaUpazila').value,
+                zila: document.getElementById('zila').value,
+                livestock: document.querySelector('input[name="livestock"]:checked').value,
+                comments: document.getElementById('comments').value,
+                timestamp: new Date()
+            };
+
+            // Add foreign travel data if applicable
+            if (formData.age >= 28) {
+                const foreignTravelRadio = document.querySelector('input[name="foreignTravel"]:checked');
+                formData.foreignTravel = foreignTravelRadio ? foreignTravelRadio.value : 'না';
+            } else {
+                formData.foreignTravel = 'প্রযোজ্য নয়';
+            }
+
+            try {
+                // Save to Firestore
+                await db.collection('collectedData').add(formData);
+                
+                // Show success message
+                showMessage('ডেটা সফলভাবে জমা দেওয়া হয়েছে!', 'success');
+                
+                // Reset form
+                dataForm.reset();
+                foreignTravelGroup.classList.add('hidden');
+                
+                // Redirect to admin page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'datacollect-admin.html';
+                }, 2000);
+                
+            } catch (error) {
+                showMessage('ত্রুটি: ' + error.message, 'error');
+                console.error('Error saving data: ', error);
+            }
+        });
+
+        // Show message function
+        function showMessage(message, type) {
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Phone number validation
+        document.getElementById('phone').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9+]/g, '');
+        });
+    </script>
+</body>
+</html>
