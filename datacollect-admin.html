@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ডেটা কালেকশন অ্যাডমিন - একতা ফাউন্ডেশন</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <style>
+        /* আপনার existing CSS এখানে রাখুন */
         * {
             margin: 0;
             padding: 0;
@@ -339,6 +341,13 @@
             color: white;
         }
 
+        /* Export Options */
+        .export-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .filter-row, .form-row {
@@ -356,6 +365,10 @@
             }
 
             .action-buttons {
+                flex-direction: column;
+            }
+
+            .export-options {
                 flex-direction: column;
             }
         }
@@ -385,9 +398,14 @@
         <div class="content-section active" id="collected-data">
             <h2 class="section-title">
                 সংগৃহীত ডেটা
-                <button class="btn btn-success" onclick="exportToCSV()">
-                    <i class="fas fa-download"></i> CSV ডাউনলোড
-                </button>
+                <div class="export-options">
+                    <button class="btn btn-success" onclick="exportToCSV()">
+                        <i class="fas fa-file-csv"></i> CSV ডাউনলোড
+                    </button>
+                    <button class="btn" style="background: #28a745;" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i> Excel ডাউনলোড
+                    </button>
+                </div>
             </h2>
 
             <!-- Filter Section -->
@@ -833,7 +851,7 @@
             document.getElementById('activeVolunteers').textContent = activeVolunteers;
         }
 
-        // Export to CSV with Bengali headers
+        // Export to CSV with proper Bengali encoding
         function exportToCSV() {
             try {
                 let dataToExport = [...allData];
@@ -857,6 +875,7 @@
                     return;
                 }
                 
+                // Bengali headers with proper encoding
                 const headers = [
                     'ভলান্টিয়ারের নাম',
                     'ভলান্টিয়ারের এলাকা',
@@ -875,7 +894,11 @@
                     'মন্তব্য'
                 ];
                 
-                const rows = [headers.join(',')];
+                const rows = [];
+                
+                // Add BOM for UTF-8 encoding
+                const BOM = "\uFEFF";
+                rows.push(BOM + headers.join(','));
                 
                 dataToExport.forEach(item => {
                     const date = item.timestamp?.toDate ? item.timestamp.toDate() : new Date(item.timestamp);
@@ -900,11 +923,13 @@
                     rows.push(rowData);
                 });
                 
-                const csvContent = "data:text/csv;charset=utf-8," + rows.join('\n');
-                const encodedUri = encodeURI(csvContent);
+                const csvContent = rows.join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
                 link.setAttribute("download", "একতা_ফাউন্ডেশন_ডেটা.csv");
+                link.style.visibility = 'hidden';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -913,6 +938,85 @@
                 
             } catch (error) {
                 showMessage('CSV ডাউনলোড করতে সমস্যা: ' + error.message, 'error');
+            }
+        }
+
+        // Export to Excel with Bengali support
+        function exportToExcel() {
+            try {
+                let dataToExport = [...allData];
+                
+                // Apply current filters
+                if (currentFilters.volunteer) {
+                    dataToExport = dataToExport.filter(item => item.volunteerName === currentFilters.volunteer);
+                }
+                if (currentFilters.zone) {
+                    dataToExport = dataToExport.filter(item => item.volunteerZone === currentFilters.zone);
+                }
+                if (currentFilters.date) {
+                    dataToExport = dataToExport.filter(item => {
+                        const itemDate = item.timestamp?.toDate ? item.timestamp.toDate() : new Date(item.timestamp);
+                        return itemDate.toISOString().split('T')[0] === currentFilters.date;
+                    });
+                }
+                
+                if (dataToExport.length === 0) {
+                    showMessage('এক্সপোর্ট করার জন্য কোন ডেটা নেই', 'error');
+                    return;
+                }
+                
+                // Prepare data for Excel
+                const headers = [
+                    'ভলান্টিয়ারের নাম',
+                    'ভলান্টিয়ারের এলাকা',
+                    'তারিখ',
+                    'নাম',
+                    'ফোন নম্বর',
+                    'পিতার নাম',
+                    'মাতার নাম',
+                    'বয়স',
+                    'গ্রাম',
+                    'পোস্ট/ইউনিয়ন',
+                    'থানা/উপজেলা',
+                    'জেলা',
+                    'গবাদি পশু',
+                    'বিদেশ যাওয়ার ইচ্ছা',
+                    'মন্তব্য'
+                ];
+                
+                const excelData = [headers];
+                
+                dataToExport.forEach(item => {
+                    const date = item.timestamp?.toDate ? item.timestamp.toDate() : new Date(item.timestamp);
+                    const rowData = [
+                        item.volunteerName || 'N/A',
+                        item.volunteerZone || 'N/A',
+                        date.toLocaleDateString('bn-BD'),
+                        item.name || 'N/A',
+                        item.phone || 'N/A',
+                        item.fatherName || 'N/A',
+                        item.motherName || 'N/A',
+                        item.age || 'N/A',
+                        item.village || 'N/A',
+                        item.postUnion || 'N/A',
+                        item.thanaUpazila || 'N/A',
+                        item.zila || 'N/A',
+                        item.livestock || 'N/A',
+                        item.foreignTravel || 'N/A',
+                        item.comments || 'N/A'
+                    ];
+                    excelData.push(rowData);
+                });
+                
+                const ws = XLSX.utils.aoa_to_sheet(excelData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "একতা ফাউন্ডেশন ডেটা");
+                XLSX.writeFile(wb, "একতা_ফাউন্ডেশন_ডেটা.xlsx");
+                
+                showMessage('Excel ফাইল সফলভাবে ডাউনলোড হয়েছে!', 'success');
+                
+            } catch (error) {
+                showMessage('Excel ডাউনলোড করতে সমস্যা: ' + error.message, 'error');
             }
         }
 
