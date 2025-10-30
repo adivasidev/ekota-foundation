@@ -431,6 +431,17 @@
             display: none;
         }
         
+        /* Real-time Update Indicator */
+        .update-indicator {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+            display: none;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             .nav-container {
@@ -498,6 +509,11 @@
     <div class="container">
         <div class="jobs-section" id="jobs">
             <h2 class="section-title">বর্তমান চাকরির Opportunities</h2>
+            
+            <!-- Real-time Update Indicator -->
+            <div id="updateIndicator" class="update-indicator">
+                <i class="fas fa-sync-alt"></i> নতুন জব যোগ করা হয়েছে
+            </div>
             
             <!-- Success Message -->
             <div id="successMessage" class="success-message">
@@ -600,43 +616,66 @@
         const applicationForm = document.getElementById('applicationForm');
         const submitBtn = document.getElementById('submitBtn');
         const successMessage = document.getElementById('successMessage');
+        const updateIndicator = document.getElementById('updateIndicator');
+
+        // Real-time listener variable
+        let unsubscribeManualJobs = null;
 
         // Load jobs when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            loadManualJobs();
+            setupRealTimeListener();
         });
 
-        // Load manual jobs
-        async function loadManualJobs() {
+        // Setup real-time listener for manual jobs
+        function setupRealTimeListener() {
             const container = document.getElementById('manualJobsContainer');
             
             try {
-                const snapshot = await db.collection('manualJobs')
+                // Real-time listener for manual jobs
+                unsubscribeManualJobs = db.collection('manualJobs')
                     .where('status', '==', 'active')
                     .orderBy('createdAt', 'desc')
-                    .get();
+                    .onSnapshot((snapshot) => {
+                        console.log('Real-time update received:', snapshot.size, 'jobs');
+                        
+                        container.innerHTML = '';
 
-                container.innerHTML = '';
+                        if (snapshot.empty) {
+                            container.innerHTML = `
+                                <div class="no-jobs">
+                                    <i class="fas fa-briefcase"></i>
+                                    <h3>কোন সক্রিয় চাকরি নেই</h3>
+                                    <p>বর্তমানে কোন চাকরির Opportunities নেই। পরবর্তী Opportunities-এর জন্য আমাদের সাথে থাকুন।</p>
+                                </div>
+                            `;
+                            return;
+                        }
 
-                if (snapshot.empty) {
-                    container.innerHTML = `
-                        <div class="no-jobs">
-                            <i class="fas fa-briefcase"></i>
-                            <h3>কোন সক্রিয় চাকরি নেই</h3>
-                            <p>বর্তমানে কোন চাকরির Opportunities নেই। পরবর্তী Opportunities-এর জন্য আমাদের সাথে থাকুন।</p>
-                        </div>
-                    `;
-                    return;
-                }
+                        snapshot.docChanges().forEach(change => {
+                            if (change.type === 'added') {
+                                showUpdateIndicator('নতুন জব যোগ করা হয়েছে');
+                            }
+                        });
 
-                snapshot.forEach(doc => {
-                    const job = doc.data();
-                    const jobCard = createJobCard(job, doc.id);
-                    container.innerHTML += jobCard;
-                });
+                        snapshot.forEach(doc => {
+                            const job = doc.data();
+                            const jobCard = createJobCard(job, doc.id);
+                            container.innerHTML += jobCard;
+                        });
+
+                    }, (error) => {
+                        console.error('Error in real-time listener:', error);
+                        container.innerHTML = `
+                            <div class="no-jobs">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>লোড করতে সমস্যা হয়েছে</h3>
+                                <p>দয়া করে পৃষ্ঠাটি রিফ্রেশ করুন অথবা কিছুক্ষণ পর আবার চেষ্টা করুন।</p>
+                            </div>
+                        `;
+                    });
 
             } catch (error) {
-                console.error('Error loading manual jobs:', error);
+                console.error('Error setting up real-time listener:', error);
                 container.innerHTML = `
                     <div class="no-jobs">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -645,6 +684,16 @@
                     </div>
                 `;
             }
+        }
+
+        // Show update indicator
+        function showUpdateIndicator(message) {
+            updateIndicator.innerHTML = `<i class="fas fa-sync-alt"></i> ${message}`;
+            updateIndicator.style.display = 'block';
+            
+            setTimeout(() => {
+                updateIndicator.style.display = 'none';
+            }, 3000);
         }
 
         // Create job card HTML
@@ -788,6 +837,13 @@
             document.getElementById('jobs').scrollIntoView({
                 behavior: 'smooth'
             });
+        });
+
+        // Cleanup listener when page unloads
+        window.addEventListener('beforeunload', function() {
+            if (unsubscribeManualJobs) {
+                unsubscribeManualJobs();
+            }
         });
     </script>
 </body>
