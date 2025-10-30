@@ -6,7 +6,6 @@
     <title>Admin Panel - Ekota Foundation</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; }
@@ -71,54 +70,52 @@
         .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         .table th { background: #34495e; color: white; }
         
-        /* Image Upload */
-        .image-upload { border: 2px dashed #ddd; padding: 20px; text-align: center; margin-bottom: 20px; }
-        .image-preview { max-width: 300px; margin: 10px auto; display: none; }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="admin-container">
         <div class="admin-header">
             <h1>একতা ফাউন্ডেশন - অ্যাডমিন প্যানেল</h1>
-            <p>ক্যারিয়ার ম্যানেজমেন্ট</p>
+            <p>ক্যারিয়ার ম্যানেজমেন্ট - ম্যানুয়াল জব পোস্ট</p>
         </div>
         
         <!-- Tabs -->
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('imageJob')">ইমেজ জব পোস্ট</div>
-            <div class="tab" onclick="switchTab('manualJob')">ম্যানুয়াল জব পোস্ট</div>
+            <div class="tab active" onclick="switchTab('manualJob')">জব পোস্ট করুন</div>
             <div class="tab" onclick="switchTab('viewJobs')">পোস্টকৃত জবস</div>
             <div class="tab" onclick="switchTab('applications')">আবেদনকারীরা</div>
         </div>
         
-        <!-- Image Job Post Tab -->
-        <div id="imageJob" class="tab-content active">
-            <h2>ইমেজ জব পোস্ট</h2>
-            <div class="image-upload">
-                <input type="file" id="jobImage" accept="image/*" onchange="previewImage()">
-                <p>জব ইমেজ আপলোড করুন (PNG, JPG, JPEG)</p>
-                <img id="imagePreview" class="image-preview" alt="Image Preview">
-            </div>
-            <button class="btn btn-success" onclick="uploadImageJob()">জব পোস্ট করুন</button>
+        <!-- Success Message -->
+        <div id="successMessage" class="success-message">
+            জব সফলভাবে পোস্ট হয়েছে!
         </div>
         
         <!-- Manual Job Post Tab -->
-        <div id="manualJob" class="tab-content">
-            <h2>ম্যানুয়াল জব পোস্ট</h2>
+        <div id="manualJob" class="tab-content active">
+            <h2>নতুন জব পোস্ট করুন</h2>
             <div class="form-group">
-                <label>পোস্টের নাম</label>
+                <label>পোস্টের নাম *</label>
                 <input type="text" id="jobTitle" placeholder="উদাহরণ: সফটওয়্যার ডেভেলপার">
             </div>
             <div class="form-group">
-                <label>লোকেশন</label>
+                <label>লোকেশন *</label>
                 <input type="text" id="jobLocation" placeholder="উদাহরণ: ঢাকা, বাংলাদেশ">
             </div>
             <div class="form-group">
-                <label>বেতন</label>
+                <label>বেতন *</label>
                 <input type="text" id="jobSalary" placeholder="উদাহরণ: ২৫,০০০ - ৩৫,০০০ টাকা">
             </div>
             <div class="form-group">
-                <label>জব টাইপ</label>
+                <label>জব টাইপ *</label>
                 <select id="jobType">
                     <option value="ফুল-টাইম">ফুল-টাইম</option>
                     <option value="পার্ট-টাইম">পার্ট-টাইম</option>
@@ -127,16 +124,16 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>বিস্তারিত বিবরণ</label>
-                <textarea id="jobDescription" placeholder="জবের বিস্তারিত বিবরণ"></textarea>
+                <label>বিস্তারিত বিবরণ *</label>
+                <textarea id="jobDescription" placeholder="জবের বিস্তারিত বিবরণ লিখুন..."></textarea>
             </div>
             <div class="form-group">
-                <label>দায়িত্বসমূহ</label>
-                <textarea id="jobResponsibilities" placeholder="দায়িত্বসমূহ (প্রতিটি দায়িত্ব আলাদা লাইনে লিখুন)"></textarea>
+                <label>দায়িত্বসমূহ (প্রতিটি দায়িত্ব আলাদা লাইনে লিখুন)</label>
+                <textarea id="jobResponsibilities" placeholder="দায়িত্ব ১&#10;দায়িত্ব ২&#10;দায়িত্ব ৩"></textarea>
             </div>
             <div class="form-group">
-                <label>যোগ্যতা</label>
-                <textarea id="jobQualifications" placeholder="যোগ্যতা (প্রতিটি যোগ্যতা আলাদা লাইনে লিখুন)"></textarea>
+                <label>যোগ্যতা (প্রতিটি যোগ্যতা আলাদা লাইনে লিখুন)</label>
+                <textarea id="jobQualifications" placeholder="যোগ্যতা ১&#10;যোগ্যতা ২&#10;যোগ্যতা ৩"></textarea>
             </div>
             <button class="btn btn-success" onclick="createManualJob()">জব পোস্ট করুন</button>
         </div>
@@ -144,7 +141,9 @@
         <!-- View Jobs Tab -->
         <div id="viewJobs" class="tab-content">
             <h2>পোস্টকৃত জবস</h2>
-            <div id="jobsList"></div>
+            <div id="jobsList">
+                <p>লোড হচ্ছে...</p>
+            </div>
         </div>
         
         <!-- Applications Tab -->
@@ -157,12 +156,12 @@
                         <th>পদ</th>
                         <th>ফোন</th>
                         <th>ইমেইল</th>
-                        <th>সিভি</th>
+                        <th>আবেদনের তারিখ</th>
                         <th>কার্যক্রম</th>
                     </tr>
                 </thead>
                 <tbody id="applicationsTable">
-                    <!-- Applications will be loaded here -->
+                    <tr><td colspan="6">লোড হচ্ছে...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -183,7 +182,6 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const storage = firebase.storage();
 
         // Tab switching function
         function switchTab(tabName) {
@@ -201,54 +199,6 @@
             if(tabName === 'applications') loadApplications();
         }
 
-        // Image preview function
-        function previewImage() {
-            const file = document.getElementById('jobImage').files[0];
-            const preview = document.getElementById('imagePreview');
-            
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // Upload image job
-        async function uploadImageJob() {
-            const file = document.getElementById('jobImage').files[0];
-            
-            if (!file) {
-                alert('দয়া করে একটি ইমেজ সিলেক্ট করুন');
-                return;
-            }
-
-            try {
-                // Upload image to Firebase Storage
-                const storageRef = storage.ref();
-                const imageRef = storageRef.child('job-images/' + Date.now() + '_' + file.name);
-                const snapshot = await imageRef.put(file);
-                const imageUrl = await snapshot.ref.getDownloadURL();
-
-                // Save job data to Firestore
-                await db.collection('imageJobs').add({
-                    imageUrl: imageUrl,
-                    createdAt: new Date(),
-                    type: 'image'
-                });
-
-                alert('ইমেজ জব সফলভাবে পোস্ট হয়েছে!');
-                document.getElementById('jobImage').value = '';
-                document.getElementById('imagePreview').style.display = 'none';
-                
-            } catch (error) {
-                console.error('Error:', error);
-                alert('ইমেজ আপলোড করতে সমস্যা হয়েছে');
-            }
-        }
-
         // Create manual job
         async function createManualJob() {
             const jobData = {
@@ -257,64 +207,85 @@
                 salary: document.getElementById('jobSalary').value,
                 type: document.getElementById('jobType').value,
                 description: document.getElementById('jobDescription').value,
-                responsibilities: document.getElementById('jobResponsibilities').value.split('\n'),
-                qualifications: document.getElementById('jobQualifications').value.split('\n'),
+                responsibilities: document.getElementById('jobResponsibilities').value.split('\n').filter(r => r.trim()),
+                qualifications: document.getElementById('jobQualifications').value.split('\n').filter(q => q.trim()),
                 createdAt: new Date(),
-                type: 'manual'
+                status: 'active'
             };
 
             // Validation
-            if (!jobData.title || !jobData.location || !jobData.salary) {
-                alert('দয়া করে প্রয়োজনীয় তথ্য পূরণ করুন');
+            if (!jobData.title || !jobData.location || !jobData.salary || !jobData.description) {
+                alert('দয়া করে প্রয়োজনীয় তথ্য পূরণ করুন (পোস্ট নাম, লোকেশন, বেতন, বিবরণ)');
                 return;
             }
 
+            // Show loading
+            const submitBtn = event.target;
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'পোস্ট হচ্ছে...';
+            submitBtn.disabled = true;
+
             try {
+                console.log('Saving job:', jobData);
+                
                 await db.collection('manualJobs').add(jobData);
-                alert('জব সফলভাবে পোস্ট হয়েছে!');
+                
+                console.log('Job saved successfully');
+                
+                // Show success message
+                showSuccessMessage();
                 
                 // Clear form
-                document.getElementById('jobTitle').value = '';
-                document.getElementById('jobLocation').value = '';
-                document.getElementById('jobSalary').value = '';
-                document.getElementById('jobDescription').value = '';
-                document.getElementById('jobResponsibilities').value = '';
-                document.getElementById('jobQualifications').value = '';
+                clearForm();
                 
             } catch (error) {
-                console.error('Error:', error);
-                alert('জব পোস্ট করতে সমস্যা হয়েছে');
+                console.error('Error saving job:', error);
+                alert('জব পোস্ট করতে সমস্যা হয়েছে: ' + error.message);
+            } finally {
+                // Reset button
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
+        }
+
+        // Show success message
+        function showSuccessMessage() {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.style.display = 'block';
+            successMsg.textContent = 'জব সফলভাবে পোস্ট হয়েছে!';
+            
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('jobTitle').value = '';
+            document.getElementById('jobLocation').value = '';
+            document.getElementById('jobSalary').value = '';
+            document.getElementById('jobDescription').value = '';
+            document.getElementById('jobResponsibilities').value = '';
+            document.getElementById('jobQualifications').value = '';
         }
 
         // Load jobs for admin view
         async function loadJobs() {
             const jobsList = document.getElementById('jobsList');
-            jobsList.innerHTML = '<p>লোড হচ্ছে...</p>';
 
             try {
-                // Load image jobs
-                const imageJobsSnapshot = await db.collection('imageJobs').get();
-                const manualJobsSnapshot = await db.collection('manualJobs').get();
+                const snapshot = await db.collection('manualJobs')
+                    .orderBy('createdAt', 'desc')
+                    .get();
 
                 jobsList.innerHTML = '';
 
-                // Display image jobs
-                imageJobsSnapshot.forEach(doc => {
-                    const job = doc.data();
-                    const jobCard = `
-                        <div class="job-card">
-                            <h3>ইমেজ জব</h3>
-                            <img src="${job.imageUrl}" style="max-width: 200px; margin: 10px 0;">
-                            <p><strong>পোস্ট তারিখ:</strong> ${job.createdAt.toDate().toLocaleDateString('bn-BD')}</p>
-                            <button class="btn btn-danger" onclick="deleteJob('imageJobs', '${doc.id}')">ডিলিট করুন</button>
-                        </div>
-                    `;
-                    jobsList.innerHTML += jobCard;
-                });
+                if (snapshot.empty) {
+                    jobsList.innerHTML = '<p>কোন জব পোস্ট করা হয়নি</p>';
+                    return;
+                }
 
-                // Display manual jobs
-                manualJobsSnapshot.forEach(doc => {
+                snapshot.forEach(doc => {
                     const job = doc.data();
                     const jobCard = `
                         <div class="job-card">
@@ -322,8 +293,11 @@
                             <p><strong>লোকেশন:</strong> ${job.location}</p>
                             <p><strong>বেতন:</strong> ${job.salary}</p>
                             <p><strong>জব টাইপ:</strong> ${job.type}</p>
-                            <button class="btn btn-warning" onclick="editJob('${doc.id}')">এডিট করুন</button>
-                            <button class="btn btn-danger" onclick="deleteJob('manualJobs', '${doc.id}')">ডিলিট করুন</button>
+                            <p><strong>পোস্ট তারিখ:</strong> ${job.createdAt.toDate().toLocaleDateString('bn-BD')}</p>
+                            <div style="margin-top: 10px;">
+                                <button class="btn btn-warning" onclick="editJob('${doc.id}')">এডিট করুন</button>
+                                <button class="btn btn-danger" onclick="deleteJob('${doc.id}')">ডিলিট করুন</button>
+                            </div>
                         </div>
                     `;
                     jobsList.innerHTML += jobCard;
@@ -338,11 +312,18 @@
         // Load applications
         async function loadApplications() {
             const applicationsTable = document.getElementById('applicationsTable');
-            applicationsTable.innerHTML = '<tr><td colspan="6">লোড হচ্ছে...</td></tr>';
 
             try {
-                const snapshot = await db.collection('applications').get();
+                const snapshot = await db.collection('applications')
+                    .orderBy('appliedAt', 'desc')
+                    .get();
+                    
                 applicationsTable.innerHTML = '';
+
+                if (snapshot.empty) {
+                    applicationsTable.innerHTML = '<tr><td colspan="6">কোন আবেদন পাওয়া যায়নি</td></tr>';
+                    return;
+                }
 
                 snapshot.forEach(doc => {
                     const application = doc.data();
@@ -352,9 +333,7 @@
                             <td>${application.position}</td>
                             <td>${application.phone}</td>
                             <td>${application.email || 'N/A'}</td>
-                            <td>${application.cvUrl ? 
-                                `<a href="${application.cvUrl}" target="_blank" class="btn btn-primary">ডাউনলোড</a>` : 
-                                'N/A'}</td>
+                            <td>${application.appliedAt.toDate().toLocaleDateString('bn-BD')}</td>
                             <td>
                                 <button class="btn btn-danger" onclick="deleteApplication('${doc.id}')">ডিলিট</button>
                             </td>
@@ -363,10 +342,6 @@
                     applicationsTable.innerHTML += row;
                 });
 
-                if (snapshot.empty) {
-                    applicationsTable.innerHTML = '<tr><td colspan="6">কোন আবেদন পাওয়া যায়নি</td></tr>';
-                }
-
             } catch (error) {
                 console.error('Error loading applications:', error);
                 applicationsTable.innerHTML = '<tr><td colspan="6">লোড করতে সমস্যা হয়েছে</td></tr>';
@@ -374,10 +349,10 @@
         }
 
         // Delete job function
-        async function deleteJob(collectionName, docId) {
+        async function deleteJob(docId) {
             if (confirm('আপনি কি নিশ্চিত এই জব ডিলিট করতে চান?')) {
                 try {
-                    await db.collection(collectionName).doc(docId).delete();
+                    await db.collection('manualJobs').doc(docId).delete();
                     alert('জব সফলভাবে ডিলিট হয়েছে');
                     loadJobs();
                 } catch (error) {
@@ -401,13 +376,13 @@
             }
         }
 
-        // Edit job function (basic implementation)
+        // Edit job function
         function editJob(jobId) {
             alert('এডিট ফিচারটি শীঘ্রই আসছে! জব ID: ' + jobId);
-            // You can implement edit functionality here
+            // আপনি পরে edit functionality implement করতে পারবেন
         }
 
-        // Load applications when page loads
+        // Initial load
         document.addEventListener('DOMContentLoaded', function() {
             loadApplications();
         });
