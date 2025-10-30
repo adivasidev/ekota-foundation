@@ -626,15 +626,14 @@
             setupRealTimeListener();
         });
 
-        // Setup real-time listener for manual jobs
+        // Setup real-time listener for manual jobs (FIXED VERSION)
         function setupRealTimeListener() {
             const container = document.getElementById('manualJobsContainer');
             
             try {
-                // Real-time listener for manual jobs
+                // SIMPLE QUERY - No composite filters to avoid index issues
                 unsubscribeManualJobs = db.collection('manualJobs')
-                    .where('status', '==', 'active')
-                    .orderBy('createdAt', 'desc')
+                    .orderBy('createdAt', 'desc') // Only ordering, no where clause
                     .onSnapshot((snapshot) => {
                         console.log('Real-time update received:', snapshot.size, 'jobs');
                         
@@ -651,16 +650,37 @@
                             return;
                         }
 
+                        let hasActiveJobs = false;
+                        let jobsCount = 0;
+
+                        snapshot.forEach(doc => {
+                            const job = doc.data();
+                            // Manual filtering for active status
+                            if (!job.status || job.status === 'active') {
+                                const jobCard = createJobCard(job, doc.id);
+                                container.innerHTML += jobCard;
+                                hasActiveJobs = true;
+                                jobsCount++;
+                            }
+                        });
+
+                        if (!hasActiveJobs) {
+                            container.innerHTML = `
+                                <div class="no-jobs">
+                                    <i class="fas fa-briefcase"></i>
+                                    <h3>কোন সক্রিয় চাকরি নেই</h3>
+                                    <p>বর্তমানে কোন চাকরির Opportunities নেই। পরবর্তী Opportunities-এর জন্য আমাদের সাথে থাকুন।</p>
+                                </div>
+                            `;
+                        } else {
+                            console.log(`Displaying ${jobsCount} active jobs`);
+                        }
+
+                        // Show update indicator for new additions
                         snapshot.docChanges().forEach(change => {
                             if (change.type === 'added') {
                                 showUpdateIndicator('নতুন জব যোগ করা হয়েছে');
                             }
-                        });
-
-                        snapshot.forEach(doc => {
-                            const job = doc.data();
-                            const jobCard = createJobCard(job, doc.id);
-                            container.innerHTML += jobCard;
                         });
 
                     }, (error) => {
@@ -670,6 +690,7 @@
                                 <i class="fas fa-exclamation-triangle"></i>
                                 <h3>লোড করতে সমস্যা হয়েছে</h3>
                                 <p>দয়া করে পৃষ্ঠাটি রিফ্রেশ করুন অথবা কিছুক্ষণ পর আবার চেষ্টা করুন।</p>
+                                <p style="color: #e74c3c; font-size: 14px; margin-top: 10px;">Error: ${error.message}</p>
                             </div>
                         `;
                     });
@@ -700,14 +721,14 @@
         function createJobCard(job, jobId) {
             return `
                 <div class="job-card">
-                    <h3 class="job-title">${job.title}</h3>
+                    <h3 class="job-title">${job.title || 'No Title'}</h3>
                     <div class="job-meta">
-                        <span class="location">📍 ${job.location}</span>
-                        <span class="salary">💰 ${job.salary}</span>
-                        <span class="type">⏰ ${job.type}</span>
+                        <span class="location">📍 ${job.location || 'No Location'}</span>
+                        <span class="salary">💰 ${job.salary || 'No Salary'}</span>
+                        <span class="type">⏰ ${job.type || 'No Type'}</span>
                     </div>
                     <div class="job-description">
-                        ${job.description}
+                        ${job.description || 'No description available'}
                     </div>
                     
                     ${job.responsibilities && job.responsibilities.length > 0 ? `
@@ -728,7 +749,7 @@
                     </div>
                     ` : ''}
                     
-                    <button class="apply-btn" onclick="openApplicationModal('${job.title}', '${jobId}')">
+                    <button class="apply-btn" onclick="openApplicationModal('${job.title || 'Unknown Position'}', '${jobId}')">
                         <i class="fas fa-paper-plane"></i> এখনই আবেদন করুন
                     </button>
                 </div>
