@@ -18,7 +18,7 @@
         
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        /* Updated Header with Mobile Menu */
+        /* Simplified Header for Mobile */
         header {
             background: rgba(255, 255, 255, 0.95);
             padding: 15px 0;
@@ -43,6 +43,7 @@
             color: #2c3e50;
         }
         
+        /* Desktop Menu */
         .nav-menu {
             display: flex;
             list-style: none;
@@ -85,27 +86,24 @@
             color: white;
         }
 
-        /* Mobile Menu Button */
-        .mobile-menu-btn {
+        /* Mobile Buttons - Only Home and Login */
+        .mobile-buttons {
             display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            color: #2c3e50;
-            cursor: pointer;
-            padding: 5px;
         }
 
-        /* Mobile Login Button */
-        .mobile-login-btn {
-            display: none;
+        .mobile-home-btn, .mobile-login-btn {
             background: #3498db;
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
             text-decoration: none;
             font-size: 14px;
-            margin-left: 15px;
+            margin-left: 10px;
+            display: inline-block;
+        }
+
+        .mobile-home-btn {
+            background: #27ae60;
         }
 
         /* Hero Section */
@@ -161,7 +159,7 @@
             font-size: 1.8em;
         }
         
-        /* Job Cards Grid - Different heights for different devices */
+        /* Job Cards Grid */
         .jobs-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -181,27 +179,6 @@
             height: auto;
             position: relative;
             overflow: hidden;
-        }
-        
-        /* Desktop - Taller cards with more details */
-        @media (min-width: 1024px) {
-            .job-card {
-                min-height: 220px;
-            }
-        }
-        
-        /* Tablet - Medium height */
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .job-card {
-                min-height: 200px;
-            }
-        }
-        
-        /* Mobile - Compact */
-        @media (max-width: 767px) {
-            .job-card {
-                min-height: auto;
-            }
         }
         
         .job-card:hover {
@@ -345,88 +322,7 @@
             margin-bottom: 15px;
         }
 
-        /* Job Details Modal */
-        .job-modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            animation: fadeIn 0.3s;
-        }
-        
-        .job-modal-content {
-            background: white;
-            margin: 2% auto;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            animation: slideIn 0.3s;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .close {
-            position: absolute;
-            right: 20px;
-            top: 15px;
-            font-size: 28px;
-            cursor: pointer;
-            color: #999;
-        }
-        
-        .close:hover {
-            color: #000;
-        }
-        
-        .job-details-content {
-            margin-top: 20px;
-        }
-        
-        .job-details-content h4 {
-            color: #2c3e50;
-            margin: 20px 0 10px 0;
-            font-size: 1.1em;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
-        }
-        
-        .job-details-content ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .job-details-content li {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-            position: relative;
-            padding-left: 25px;
-        }
-        
-        .job-details-content li:before {
-            content: "✓";
-            color: #27ae60;
-            font-weight: bold;
-            position: absolute;
-            left: 0;
-        }
-
-        /* Application Modal with CV Upload */
+        /* Application Modal with CV Upload FIXED */
         .application-modal {
             display: none;
             position: fixed;
@@ -461,7 +357,7 @@
             font-weight: 500;
         }
         
-        .form-group input, .form-group textarea, .form-group select {
+        .form-group input, .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
@@ -470,7 +366,7 @@
             transition: border-color 0.3s;
         }
         
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        .form-group input:focus, .form-group textarea:focus {
             border-color: #3498db;
             outline: none;
         }
@@ -487,6 +383,7 @@
             border-radius: 5px;
             margin-top: 5px;
             transition: border-color 0.3s;
+            cursor: pointer;
         }
         
         .file-upload:hover {
@@ -528,28 +425,6 @@
         .submit-btn:disabled {
             background: #bdc3c7;
             cursor: not-allowed;
-        }
-
-        /* Login Modal */
-        .login-modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-        }
-        
-        .login-modal-content {
-            background: white;
-            margin: 10% auto;
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
-            position: relative;
         }
 
         /* Footer */
@@ -615,28 +490,6 @@
             font-size: 0.85em;
         }
         
-        /* Loading Animation */
-        .loading {
-            text-align: center;
-            padding: 40px;
-            grid-column: 1 / -1;
-        }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
         /* Success Message */
         .success-message {
             background: #d4edda;
@@ -649,75 +502,15 @@
             grid-column: 1 / -1;
         }
         
-        /* Mobile Menu */
-        .mobile-nav {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.98);
-            z-index: 9999;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .mobile-nav.active {
-            display: flex;
-        }
-        
-        .mobile-nav-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 28px;
-            color: #2c3e50;
-            cursor: pointer;
-        }
-        
-        .mobile-nav-menu {
-            list-style: none;
-            text-align: center;
-        }
-        
-        .mobile-nav-menu li {
-            margin: 20px 0;
-        }
-        
-        .mobile-nav-menu a {
-            text-decoration: none;
-            color: #2c3e50;
-            font-size: 1.2em;
-            font-weight: 500;
-            padding: 10px 20px;
-            display: block;
-            transition: color 0.3s;
-        }
-        
-        .mobile-nav-menu a:hover {
-            color: #e74c3c;
-        }
-        
         /* Responsive */
         @media (max-width: 768px) {
             .nav-menu {
                 display: none;
             }
             
-            .mobile-menu-btn {
-                display: block;
-            }
-            
-            .mobile-login-btn {
-                display: block;
-            }
-            
-            .desktop-login {
-                display: none;
+            .mobile-buttons {
+                display: flex;
+                align-items: center;
             }
             
             .hero h1 {
@@ -734,11 +527,6 @@
                 text-align: center;
             }
             
-            .job-modal-content {
-                margin: 5% auto;
-                padding: 20px;
-            }
-            
             .application-modal-content {
                 margin: 10% auto;
                 padding: 20px;
@@ -752,6 +540,11 @@
             
             .details-btn, .apply-now-btn {
                 width: 100%;
+            }
+            
+            .mobile-home-btn, .mobile-login-btn {
+                padding: 6px 12px;
+                font-size: 12px;
             }
         }
     </style>
@@ -768,32 +561,20 @@
                 <li><a href="about.html">আমাদের সম্পর্কে</a></li>
                 <li><a href="career.html" class="active">ক্যারিয়ার</a></li>
                 <li><a href="contact.html">যোগাযোগ</a></li>
-                <li class="desktop-login"><a href="#" class="login-btn" id="loginBtn">লগইন</a></li>
+                <li><a href="#" class="login-btn" id="loginBtn">লগইন</a></li>
             </ul>
             
-            <!-- Mobile Buttons -->
+            <!-- Mobile Buttons - Only Home and Login -->
             <div class="mobile-buttons">
-                <a href="#" class="mobile-login-btn" id="mobileLoginBtn">লগইন</a>
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <a href="index.html" class="mobile-home-btn">
+                    <i class="fas fa-home"></i> হোম
+                </a>
+                <a href="#" class="mobile-login-btn" id="mobileLoginBtn">
+                    <i class="fas fa-sign-in-alt"></i> লগইন
+                </a>
             </div>
         </div>
     </header>
-
-    <!-- Mobile Navigation Menu -->
-    <div class="mobile-nav" id="mobileNav">
-        <button class="mobile-nav-close" id="mobileNavClose">
-            <i class="fas fa-times"></i>
-        </button>
-        <ul class="mobile-nav-menu">
-            <li><a href="index.html" onclick="closeMobileNav()">হোম</a></li>
-            <li><a href="about.html" onclick="closeMobileNav()">আমাদের সম্পর্কে</a></li>
-            <li><a href="career.html" onclick="closeMobileNav()">ক্যারিয়ার</a></li>
-            <li><a href="contact.html" onclick="closeMobileNav()">যোগাযোগ</a></li>
-            <li><a href="#" onclick="openLoginModal(); closeMobileNav()">লগইন</a></li>
-        </ul>
-    </div>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -823,20 +604,10 @@
         </div>
     </div>
 
-    <!-- Job Details Modal -->
-    <div id="jobModal" class="job-modal">
-        <div class="job-modal-content">
-            <span class="close" onclick="closeJobModal()">&times;</span>
-            <div id="jobModalContent">
-                <!-- Job details will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Application Modal with CV Upload -->
+    <!-- Application Modal with CV Upload FIXED -->
     <div id="applicationModal" class="application-modal">
         <div class="application-modal-content">
-            <span class="close" onclick="closeApplicationModal()">&times;</span>
+            <span class="close" onclick="closeApplicationModal()" style="position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #999;">&times;</span>
             <h2 style="color: #2c3e50; margin-bottom: 20px;">আবেদন ফর্ম</h2>
             <form id="applicationForm">
                 <input type="hidden" id="applyPosition">
@@ -863,10 +634,10 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="applicantCV">সিভি আপলোড (PDF/Word)</label>
+                    <label for="applicantCV">সিভি আপলোড (PDF/Word) - <span style="color: #666; font-weight: normal;">ঐচ্ছিক</span></label>
                     <div class="file-upload" onclick="document.getElementById('applicantCV').click()">
                         <i class="fas fa-cloud-upload-alt"></i>
-                        <p>সিভি আপলোড করতে ক্লিক করুন</p>
+                        <p>সিভি আপলোড করতে ক্লিক করুন (ঐচ্ছিক)</p>
                         <div class="file-info" id="cvFileInfo">
                             সর্বোচ্চ 5MB, PDF বা Word ফাইল
                         </div>
@@ -887,9 +658,9 @@
     </div>
 
     <!-- Login Modal -->
-    <div id="loginModal" class="login-modal">
-        <div class="login-modal-content">
-            <span class="close" onclick="closeLoginModal()">&times;</span>
+    <div id="loginModal" class="application-modal">
+        <div class="application-modal-content">
+            <span class="close" onclick="closeLoginModal()" style="position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #999;">&times;</span>
             <h2 style="color: #2c3e50; margin-bottom: 25px; text-align: center;">ভলান্টিয়ার লগইন</h2>
             <form id="loginForm">
                 <div class="form-group">
@@ -950,19 +721,15 @@
         const storage = firebase.storage();
 
         // DOM elements
-        const jobModal = document.getElementById('jobModal');
         const applicationModal = document.getElementById('applicationModal');
         const loginModal = document.getElementById('loginModal');
-        const mobileNav = document.getElementById('mobileNav');
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileNavClose = document.getElementById('mobileNavClose');
-        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
         const applicationForm = document.getElementById('applicationForm');
         const loginForm = document.getElementById('loginForm');
         const submitBtn = document.getElementById('submitBtn');
         const loginSubmitBtn = document.getElementById('loginSubmitBtn');
         const successMessage = document.getElementById('successMessage');
         const loginBtn = document.getElementById('loginBtn');
+        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
 
         let unsubscribeManualJobs = null;
         let cvFile = null;
@@ -970,22 +737,6 @@
         // Load jobs when page loads
         document.addEventListener('DOMContentLoaded', function() {
             setupRealTimeListener();
-        });
-
-        // Mobile Menu Functions
-        function openMobileNav() {
-            mobileNav.classList.add('active');
-        }
-
-        function closeMobileNav() {
-            mobileNav.classList.remove('active');
-        }
-
-        mobileMenuBtn.addEventListener('click', openMobileNav);
-        mobileNavClose.addEventListener('click', closeMobileNav);
-        mobileLoginBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            openLoginModal();
         });
 
         // Setup real-time listener for manual jobs
@@ -1048,7 +799,7 @@
             }
         }
 
-        // Create job card with responsive design
+        // Create job card
         function createJobCard(job, jobId) {
             const shortDescription = job.description ? 
                 (job.description.length > 120 ? job.description.substring(0, 120) + '...' : job.description) : 
@@ -1099,99 +850,49 @@
                 fileInfo.style.color = '#27ae60';
             } else {
                 cvFile = null;
-                fileInfo.innerHTML = 'সর্বোচ্চ 5MB, PDF বা Word ফাইল';
+                fileInfo.innerHTML = 'সর্বোচ্চ 5MB, PDF বা Word ফাইল (ঐচ্ছিক)';
                 fileInfo.style.color = '#666';
             }
         }
 
-        // Rest of the JavaScript functions (showJobDetails, openApplicationModal, etc.)
-        function showJobDetails(jobId) {
-            db.collection('manualJobs').doc(jobId).get().then((doc) => {
-                if (doc.exists) {
-                    const job = doc.data();
-                    const modalContent = document.getElementById('jobModalContent');
-                    
-                    modalContent.innerHTML = `
-                        <h2 style="color: #2c3e50; margin-bottom: 15px;">${job.title || 'No Title'}</h2>
-                        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
-                            <span style="background: #27ae60; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9em;">
-                                <i class="fas fa-map-marker-alt"></i> ${job.location || 'Remote'}
-                            </span>
-                            <span style="background: #e74c3c; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9em;">
-                                <i class="fas fa-money-bill-wave"></i> ${job.salary || 'আলোচনা সাপেক্ষ'}
-                            </span>
-                            <span style="background: #f39c12; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9em;">
-                                <i class="fas fa-clock"></i> ${job.type || 'Full-time'}
-                            </span>
-                        </div>
-                        
-                        <div class="job-details-content">
-                            <h4>বিস্তারিত বিবরণ</h4>
-                            <p>${job.description || 'No description available'}</p>
-                            
-                            ${job.responsibilities && job.responsibilities.length > 0 ? `
-                            <h4>দায়িত্বসমূহ</h4>
-                            <ul>
-                                ${job.responsibilities.filter(r => r.trim()).map(resp => `<li>${resp}</li>`).join('')}
-                            </ul>
-                            ` : ''}
-                            
-                            ${job.qualifications && job.qualifications.length > 0 ? `
-                            <h4>যোগ্যতা</h4>
-                            <ul>
-                                ${job.qualifications.filter(q => q.trim()).map(qual => `<li>${qual}</li>`).join('')}
-                            </ul>
-                            ` : ''}
-                        </div>
-                        
-                        <button class="apply-now-btn" style="margin-top: 20px; width: 100%; padding: 12px;" 
-                                onclick="openApplicationModal('${job.title || 'Unknown Position'}', '${jobId}')">
-                            এখনই আবেদন করুন
-                        </button>
-                    `;
-                    
-                    jobModal.style.display = 'block';
-                }
-            });
-        }
-
-        function closeJobModal() {
-            jobModal.style.display = 'none';
-        }
-
+        // Open application modal
         function openApplicationModal(position, jobId) {
             document.getElementById('applyPosition').value = position;
             document.getElementById('applyJobId').value = jobId;
             applicationModal.style.display = 'block';
-            applicationModal.dataset.jobId = jobId;
-            jobModal.style.display = 'none';
         }
 
+        // Close application modal
         function closeApplicationModal() {
             applicationModal.style.display = 'none';
             applicationForm.reset();
             cvFile = null;
-            document.getElementById('cvFileInfo').innerHTML = 'সর্বোচ্চ 5MB, PDF বা Word ফাইল';
+            document.getElementById('cvFileInfo').innerHTML = 'সর্বোচ্চ 5MB, PDF বা Word ফাইল (ঐচ্ছিক)';
             document.getElementById('cvFileInfo').style.color = '#666';
         }
 
+        // Open login modal
         function openLoginModal() {
             loginModal.style.display = 'block';
         }
 
+        // Close login modal
         function closeLoginModal() {
             loginModal.style.display = 'none';
             loginForm.reset();
         }
 
+        // Close modals when clicking outside
         window.onclick = function(event) {
-            if (event.target == jobModal) closeJobModal();
-            if (event.target == applicationModal) closeApplicationModal();
-            if (event.target == loginModal) closeLoginModal();
-            if (event.target == mobileNav) closeMobileNav();
+            if (event.target == applicationModal) {
+                closeApplicationModal();
+            }
+            if (event.target == loginModal) {
+                closeLoginModal();
+            }
         }
 
-        // Application form submission with CV upload
+        // Application form submission with CV upload FIXED
         applicationForm.onsubmit = async function(e) {
             e.preventDefault();
             
@@ -1207,6 +908,7 @@
                 status: 'pending'
             };
 
+            // Validation (CV is optional now)
             if (!formData.name || !formData.phone || !formData.address) {
                 alert('দয়া করে প্রয়োজনীয় তথ্য পূরণ করুন (নাম, ফোন নম্বর, ঠিকানা)');
                 return;
@@ -1216,10 +918,12 @@
             submitBtn.textContent = 'জমা হচ্ছে...';
 
             try {
-                // Upload CV if provided
+                // Upload CV if provided (optional)
                 if (cvFile) {
                     if (cvFile.size > 5 * 1024 * 1024) {
                         alert('সিভি ফাইলের সাইজ 5MB-এর কম হতে হবে');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'আবেদন জমা দিন';
                         return;
                     }
 
@@ -1230,7 +934,7 @@
                     formData.cvFileName = cvFile.name;
                 }
 
-                // Save application to Firestore
+                // Save application to Firestore (CV optional)
                 await db.collection('applications').add(formData);
                 
                 showSuccessMessage();
@@ -1281,8 +985,13 @@
             setTimeout(() => { successMessage.style.display = 'none'; }, 5000);
         }
 
-        // Event listeners for desktop login
+        // Event listeners for login buttons
         loginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            openLoginModal();
+        });
+
+        mobileLoginBtn.addEventListener('click', function(e) {
             e.preventDefault();
             openLoginModal();
         });
@@ -1297,6 +1006,12 @@
         window.addEventListener('beforeunload', function() {
             if (unsubscribeManualJobs) unsubscribeManualJobs();
         });
+
+        // Job details function (if needed)
+        function showJobDetails(jobId) {
+            // Implement job details modal if needed
+            alert('জব বিস্তারিত দেখানো হবে। এই ফিচারটি শীঘ্রই আসছে!');
+        }
     </script>
 </body>
 </html>
