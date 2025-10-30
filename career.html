@@ -18,7 +18,7 @@
         
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        /* Header */
+        /* Header - Same as before */
         header {
             background: rgba(255, 255, 255, 0.95);
             padding: 15px 0;
@@ -85,7 +85,7 @@
             color: white;
         }
 
-        /* Hero Section */
+        /* Hero Section - Same as before */
         .hero {
             text-align: center;
             padding: 60px 20px;
@@ -122,7 +122,7 @@
             color: white;
         }
 
-        /* Manual Jobs Section */
+        /* Updated Jobs Section */
         .jobs-section {
             background: white;
             padding: 30px;
@@ -138,112 +138,134 @@
             font-size: 1.8em;
         }
         
+        /* NEW: Compact Job Cards Grid */
         .jobs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
             margin-top: 20px;
         }
         
         .job-card {
-            border: 1px solid #e0e0e0;
-            padding: 20px;
-            border-radius: 10px;
-            background: #f8f9fa;
-            transition: transform 0.3s, box-shadow 0.3s;
-            height: 100%;
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
         }
         
         .job-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            border-color: #3498db;
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
         }
         
         .job-title {
             color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 1.2em;
+            font-size: 1.1em;
+            font-weight: 600;
             line-height: 1.3;
+            margin: 0;
+            flex: 1;
+        }
+        
+        .job-type {
+            background: #f39c12;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: 500;
+            margin-left: 8px;
+            white-space: nowrap;
         }
         
         .job-meta {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            flex-direction: column;
+            gap: 6px;
             margin-bottom: 12px;
         }
         
-        .job-meta span {
-            background: #3498db;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.8em;
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85em;
+            color: #555;
         }
         
-        .job-meta .location {
-            background: #27ae60;
-        }
-        
-        .job-meta .salary {
-            background: #e74c3c;
-        }
-        
-        .job-meta .type {
-            background: #f39c12;
+        .meta-item i {
+            color: #3498db;
+            width: 14px;
+            font-size: 0.9em;
         }
         
         .job-description {
-            margin: 12px 0;
-            line-height: 1.5;
-            color: #555;
-            font-size: 0.9em;
-            flex-grow: 1;
-            overflow: hidden;
+            color: #666;
+            font-size: 0.8em;
+            line-height: 1.4;
+            margin-bottom: 12px;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 1;
         }
         
-        .show-more-btn {
+        .job-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+        }
+        
+        .details-btn {
             background: transparent;
             color: #3498db;
             border: 1px solid #3498db;
-            padding: 6px 15px;
+            padding: 6px 12px;
             border-radius: 15px;
-            font-size: 0.85em;
+            font-size: 0.75em;
             cursor: pointer;
-            margin: 8px 0;
             transition: all 0.3s;
-            width: fit-content;
+            flex: 1;
         }
         
-        .show-more-btn:hover {
+        .details-btn:hover {
             background: #3498db;
             color: white;
         }
         
-        .apply-btn {
+        .apply-now-btn {
             background: #e74c3c;
             color: white;
-            padding: 8px 20px;
             border: none;
-            border-radius: 20px;
-            font-size: 0.9em;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75em;
             cursor: pointer;
-            margin-top: 10px;
             transition: background 0.3s;
-            text-decoration: none;
-            text-align: center;
-            display: block;
+            flex: 1;
         }
         
-        .apply-btn:hover {
+        .apply-now-btn:hover {
             background: #c0392b;
         }
-        
+
+        /* Rest of the CSS remains same as previous version */
         .no-jobs {
             text-align: center;
             padding: 40px;
@@ -338,7 +360,7 @@
             left: 0;
         }
 
-        /* Login Modal */
+        /* Login Modal and other modals remain same */
         .login-modal {
             display: none;
             position: fixed;
@@ -545,6 +567,16 @@
                 padding: 20px;
             }
         }
+
+        @media (max-width: 480px) {
+            .job-actions {
+                flex-direction: column;
+            }
+            
+            .details-btn, .apply-now-btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -555,7 +587,7 @@
             <ul class="nav-menu">
                 <li><a href="index.html">হোম</a></li>
                 <li><a href="about.html">আমাদের সম্পর্কে</a></li>
-                
+                <li><a href="career.html" class="active">ক্যারিয়ার</a></li>
                 <li><a href="contact.html">যোগাযোগ</a></li>
                 <li><a href="#" class="login-btn" id="loginBtn">লগইন</a></li>
             </ul>
@@ -677,12 +709,12 @@
             </div>
         </div>
         <div class="copyright">
-            <p>&copy; ২০২৪ একতা ফাউন্ডেশন। সকল স্বত্ব সংরক্ষিত।</p>
+            <p>&copy; ২০২৪ একতা ফাউন্ডেশন। সকল حقوق محفوظة।</p>
         </div>
     </footer>
 
     <script>
-        // Firebase configuration
+        // Firebase configuration and initialization
         const firebaseConfig = {
             apiKey: "AIzaSyDNa9egoLhBl2xXYE-bsJuU0f_ih-Or0e0",
             authDomain: "ekota-foundation.firebaseapp.com",
@@ -693,11 +725,10 @@
             measurementId: "G-YRJY6VSVND"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // DOM elements
+        // DOM elements and event listeners
         const jobModal = document.getElementById('jobModal');
         const applicationModal = document.getElementById('applicationModal');
         const loginModal = document.getElementById('loginModal');
@@ -708,15 +739,12 @@
         const successMessage = document.getElementById('successMessage');
         const loginBtn = document.getElementById('loginBtn');
 
-        // Real-time listener variable
         let unsubscribeManualJobs = null;
 
-        // Load jobs when page loads
         document.addEventListener('DOMContentLoaded', function() {
             setupRealTimeListener();
         });
 
-        // Setup real-time listener for manual jobs
         function setupRealTimeListener() {
             const container = document.getElementById('manualJobsContainer');
             
@@ -776,34 +804,47 @@
             }
         }
 
-        // Create job card HTML (Compact Version)
+        // NEW: Compact Job Card Design
         function createJobCard(job, jobId) {
             const shortDescription = job.description ? 
-                (job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description) : 
-                'No description available';
+                (job.description.length > 80 ? job.description.substring(0, 80) + '...' : job.description) : 
+                'বিস্তারিত জানতে বিস্তারিত দেখুন বাটনে ক্লিক করুন';
 
             return `
                 <div class="job-card">
-                    <h3 class="job-title">${job.title || 'No Title'}</h3>
-                    <div class="job-meta">
-                        <span class="location">📍 ${job.location || 'No Location'}</span>
-                        <span class="salary">💰 ${job.salary || 'No Salary'}</span>
-                        <span class="type">⏰ ${job.type || 'No Type'}</span>
+                    <div class="job-header">
+                        <h3 class="job-title">${job.title || 'No Title'}</h3>
+                        <span class="job-type">${job.type || 'Full-time'}</span>
                     </div>
+                    
+                    <div class="job-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${job.location || 'Remote'}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>${job.salary || 'আলোচনা সাপেক্ষ'}</span>
+                        </div>
+                    </div>
+                    
                     <div class="job-description">
                         ${shortDescription}
                     </div>
-                    <button class="show-more-btn" onclick="showJobDetails('${jobId}')">
-                        বিস্তারিত দেখুন
-                    </button>
-                    <button class="apply-btn" onclick="openApplicationModal('${job.title || 'Unknown Position'}', '${jobId}')">
-                        আবেদন করুন
-                    </button>
+                    
+                    <div class="job-actions">
+                        <button class="details-btn" onclick="showJobDetails('${jobId}')">
+                            বিস্তারিত
+                        </button>
+                        <button class="apply-now-btn" onclick="openApplicationModal('${job.title || 'Unknown Position'}', '${jobId}')">
+                            আবেদন করুন
+                        </button>
+                    </div>
                 </div>
             `;
         }
 
-        // Show job details in modal
+        // Rest of the JavaScript functions remain the same as previous version
         function showJobDetails(jobId) {
             db.collection('manualJobs').doc(jobId).get().then((doc) => {
                 if (doc.exists) {
@@ -812,10 +853,16 @@
                     
                     modalContent.innerHTML = `
                         <h2 style="color: #2c3e50; margin-bottom: 15px;">${job.title || 'No Title'}</h2>
-                        <div class="job-meta">
-                            <span class="location">📍 ${job.location || 'No Location'}</span>
-                            <span class="salary">💰 ${job.salary || 'No Salary'}</span>
-                            <span class="type">⏰ ${job.type || 'No Type'}</span>
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                            <span style="background: #27ae60; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9em;">
+                                <i class="fas fa-map-marker-alt"></i> ${job.location || 'Remote'}
+                            </span>
+                            <span style="background: #e74c3c; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9em;">
+                                <i class="fas fa-money-bill-wave"></i> ${job.salary || 'আলোচনা সাপেক্ষ'}
+                            </span>
+                            <span style="background: #f39c12; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9em;">
+                                <i class="fas fa-clock"></i> ${job.type || 'Full-time'}
+                            </span>
                         </div>
                         
                         <div class="job-details-content">
@@ -837,7 +884,7 @@
                             ` : ''}
                         </div>
                         
-                        <button class="apply-btn" style="margin-top: 20px; width: 100%;" 
+                        <button class="apply-now-btn" style="margin-top: 20px; width: 100%; padding: 12px;" 
                                 onclick="openApplicationModal('${job.title || 'Unknown Position'}', '${jobId}')">
                             এখনই আবেদন করুন
                         </button>
@@ -848,52 +895,38 @@
             });
         }
 
-        // Close job modal
         function closeJobModal() {
             jobModal.style.display = 'none';
         }
 
-        // Open application modal
         function openApplicationModal(position, jobId) {
             document.getElementById('applyPosition').value = position;
             applicationModal.style.display = 'block';
             applicationModal.dataset.jobId = jobId;
-            
-            // Close job modal if open
             jobModal.style.display = 'none';
         }
 
-        // Close application modal
         function closeApplicationModal() {
             applicationModal.style.display = 'none';
             applicationForm.reset();
         }
 
-        // Open login modal
         function openLoginModal() {
             loginModal.style.display = 'block';
         }
 
-        // Close login modal
         function closeLoginModal() {
             loginModal.style.display = 'none';
             loginForm.reset();
         }
 
-        // Close modals when clicking outside
         window.onclick = function(event) {
-            if (event.target == jobModal) {
-                closeJobModal();
-            }
-            if (event.target == applicationModal) {
-                closeApplicationModal();
-            }
-            if (event.target == loginModal) {
-                closeLoginModal();
-            }
+            if (event.target == jobModal) closeJobModal();
+            if (event.target == applicationModal) closeApplicationModal();
+            if (event.target == loginModal) closeLoginModal();
         }
 
-        // Handle application form submission
+        // Form submission handlers remain the same
         applicationForm.onsubmit = async function(e) {
             e.preventDefault();
             
@@ -908,36 +941,27 @@
                 status: 'pending'
             };
 
-            // Validation
             if (!formData.name || !formData.phone || !formData.address) {
                 alert('দয়া করে প্রয়োজনীয় তথ্য পূরণ করুন (নাম, ফোন নম্বর, ঠিকানা)');
                 return;
             }
 
-            // Show loading state
             submitBtn.disabled = true;
             submitBtn.textContent = 'জমা হচ্ছে...';
 
             try {
                 await db.collection('applications').add(formData);
-                
-                // Show success message
                 showSuccessMessage();
-                
-                // Close modal and reset form
                 closeApplicationModal();
-                
             } catch (error) {
                 console.error('Error submitting application:', error);
                 alert('আবেদন জমা দিতে সমস্যা হয়েছে: ' + error.message);
             } finally {
-                // Reset button state
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'আবেদন জমা দিন';
             }
         };
 
-        // Handle login form submission
         loginForm.onsubmit = async function(e) {
             e.preventDefault();
             
@@ -949,58 +973,42 @@
                 return;
             }
 
-            // Show loading state
             loginSubmitBtn.disabled = true;
             loginSubmitBtn.textContent = 'লগইন হচ্ছে...';
 
             try {
-                // Simple validation (replace with actual authentication later)
                 if (email === 'volunteer@ekota.org' && password === 'password123') {
-                    // Redirect to volunteer page
                     window.location.href = 'volunteer.html';
                 } else {
                     alert('ভুল ইমেইল বা পাসওয়ার্ড। দয়া করে আবার চেষ্টা করুন।');
                 }
-                
             } catch (error) {
                 console.error('Login error:', error);
                 alert('লগইনে সমস্যা হয়েছে: ' + error.message);
             } finally {
-                // Reset button state
                 loginSubmitBtn.disabled = false;
                 loginSubmitBtn.textContent = 'লগইন করুন';
             }
         };
 
-        // Show success message
         function showSuccessMessage() {
             successMessage.style.display = 'block';
             successMessage.textContent = 'আপনার আবেদন সফলভাবে জমা হয়েছে! আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।';
-            
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 5000);
+            setTimeout(() => { successMessage.style.display = 'none'; }, 5000);
         }
 
-        // Event listeners
         loginBtn.addEventListener('click', function(e) {
             e.preventDefault();
             openLoginModal();
         });
 
-        // Smooth scroll for CTA button
         document.querySelector('.cta-button').addEventListener('click', function(e) {
             e.preventDefault();
-            document.getElementById('jobs').scrollIntoView({
-                behavior: 'smooth'
-            });
+            document.getElementById('jobs').scrollIntoView({ behavior: 'smooth' });
         });
 
-        // Cleanup listener when page unloads
         window.addEventListener('beforeunload', function() {
-            if (unsubscribeManualJobs) {
-                unsubscribeManualJobs();
-            }
+            if (unsubscribeManualJobs) unsubscribeManualJobs();
         });
     </script>
 </body>
