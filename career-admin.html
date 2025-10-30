@@ -46,13 +46,15 @@
         
         /* Buttons */
         .btn { 
-            padding: 10px 20px; 
+            padding: 8px 15px; 
             border: none; 
             border-radius: 5px; 
             cursor: pointer; 
             font-size: 14px;
-            margin-right: 10px;
+            margin-right: 5px;
             margin-bottom: 5px;
+            text-decoration: none;
+            display: inline-block;
         }
         .btn-primary { background: #3498db; color: white; }
         .btn-success { background: #27ae60; color: white; }
@@ -61,38 +63,59 @@
         .btn-info { background: #17a2b8; color: white; }
         .btn-secondary { background: #6c757d; color: white; }
         
-        /* Job Cards */
-        .job-card { 
-            border: 1px solid #ddd; 
-            padding: 15px; 
-            margin: 10px 0; 
+        /* Tables */
+        .table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px;
+            background: white;
             border-radius: 8px;
-            background: #f8f9fa;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .table th, .table td { 
+            padding: 12px 15px; 
+            text-align: left; 
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .table th { 
+            background: #34495e; 
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
         }
         
-        /* Tables */
-        .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        .table th { background: #34495e; color: white; }
-        
         .table tr:hover { background: #f8f9fa; }
+        
+        .table tr:last-child td {
+            border-bottom: none;
+        }
         
         .status-badge {
             padding: 4px 8px;
             border-radius: 12px;
-            font-size: 0.8em;
+            font-size: 0.75em;
             font-weight: bold;
+            display: inline-block;
         }
         
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-reviewed { background: #d1ecf1; color: #0c5460; }
-        .status-selected { background: #d4edda; color: #155724; }
-        .status-rejected { background: #f8d7da; color: #721c24; }
+        .status-active { background: #d4edda; color: #155724; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
+        
+        .job-type-badge {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            background: #e3f2fd;
+            color: #1976d2;
+            display: inline-block;
+        }
         
         .success-message {
             background: #d4edda;
             color: #155724;
-            padding: 10px;
+            padding: 12px;
             border-radius: 5px;
             margin: 10px 0;
             display: none;
@@ -101,7 +124,7 @@
         .error-message {
             background: #f8d7da;
             color: #721c24;
-            padding: 10px;
+            padding: 12px;
             border-radius: 5px;
             margin: 10px 0;
             display: none;
@@ -131,7 +154,20 @@
             position: relative;
         }
 
-        /* Application Actions */
+        /* Application Status */
+        .application-status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+        }
+        
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-reviewed { background: #d1ecf1; color: #0c5460; }
+        .status-selected { background: #d4edda; color: #155724; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+
+        /* Action Buttons */
         .action-buttons {
             display: flex;
             gap: 5px;
@@ -146,12 +182,76 @@
             cursor: pointer;
         }
 
+        /* Search and Filter */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .search-box {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 300px;
+            max-width: 100%;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .tabs { flex-direction: column; }
             .tab { padding: 12px 20px; }
             .action-buttons { flex-direction: column; }
             .btn { margin-right: 0; width: 100%; }
+            .table-controls { flex-direction: column; align-items: stretch; }
+            .search-box { width: 100%; }
+            .filter-controls { width: 100%; justify-content: space-between; }
+            
+            .table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-container { padding: 10px; }
+            .table th, .table td { padding: 8px 10px; }
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 3em;
+            color: #bdc3c7;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -209,15 +309,55 @@
                 <label>যোগ্যতা (প্রতিটি যোগ্যতা আলাদা লাইনে লিখুন)</label>
                 <textarea id="jobQualifications" placeholder="যোগ্যতা ১&#10;যোগ্যতা ২&#10;যোগ্যতা ৩"></textarea>
             </div>
-            <button class="btn btn-success" onclick="createManualJob()">জব পোস্ট করুন</button>
+            <button class="btn btn-success" onclick="createManualJob()">
+                <i class="fas fa-plus"></i> জব পোস্ট করুন
+            </button>
         </div>
         
-        <!-- View Jobs Tab -->
+        <!-- View Jobs Tab - TABLE VIEW -->
         <div id="viewJobs" class="tab-content">
             <h2>পোস্টকৃত জবস</h2>
-            <div id="jobsList">
-                <p>লোড হচ্ছে...</p>
+            
+            <!-- Table Controls -->
+            <div class="table-controls">
+                <div class="filter-controls">
+                    <input type="text" id="jobSearch" class="search-box" placeholder="জব খুঁজুন..." onkeyup="filterJobs()">
+                    <select id="statusFilter" class="filter-select" onchange="filterJobs()">
+                        <option value="all">সব স্ট্যাটাস</option>
+                        <option value="active">একটিভ</option>
+                        <option value="inactive">ইনএকটিভ</option>
+                    </select>
+                    <select id="typeFilter" class="filter-select" onchange="filterJobs()">
+                        <option value="all">সব টাইপ</option>
+                        <option value="ফুল-টাইম">ফুল-টাইম</option>
+                        <option value="পার্ট-টাইম">পার্ট-টাইম</option>
+                        <option value="কন্ট্রাক্ট">কন্ট্রাক্ট</option>
+                        <option value="ইন্টার্নশিপ">ইন্টার্নশিপ</option>
+                    </select>
+                </div>
+                <button class="btn btn-info" onclick="loadJobs()">
+                    <i class="fas fa-sync-alt"></i> রিফ্রেশ
+                </button>
             </div>
+            
+            <!-- Jobs Table -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>জব টাইটেল</th>
+                        <th>লোকেশন</th>
+                        <th>বেতন</th>
+                        <th>টাইপ</th>
+                        <th>স্ট্যাটাস</th>
+                        <th>পোস্ট তারিখ</th>
+                        <th>এপ্লিকেশন</th>
+                        <th>কার্যক্রম</th>
+                    </tr>
+                </thead>
+                <tbody id="jobsTable">
+                    <tr><td colspan="8" class="loading">লোড হচ্ছে...</td></tr>
+                </tbody>
+            </table>
         </div>
         
         <!-- Applications Tab -->
@@ -225,18 +365,20 @@
             <h2>আবেদনকারীদের তালিকা</h2>
             
             <!-- Filter Options -->
-            <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <select id="statusFilter" onchange="loadApplications()" style="padding: 8px; border-radius: 5px;">
-                    <option value="all">সব স্ট্যাটাস</option>
-                    <option value="pending">পেন্ডিং</option>
-                    <option value="reviewed">রিভিউড</option>
-                    <option value="selected">সিলেক্টেড</option>
-                    <option value="rejected">রিজেক্টেড</option>
-                </select>
-                
-                <select id="jobFilter" onchange="loadApplications()" style="padding: 8px; border-radius: 5px;">
-                    <option value="all">সব জব</option>
-                </select>
+            <div class="table-controls">
+                <div class="filter-controls">
+                    <select id="appStatusFilter" class="filter-select" onchange="loadApplications()">
+                        <option value="all">সব স্ট্যাটাস</option>
+                        <option value="pending">পেন্ডিং</option>
+                        <option value="reviewed">রিভিউড</option>
+                        <option value="selected">সিলেক্টেড</option>
+                        <option value="rejected">রিজেক্টেড</option>
+                    </select>
+                    
+                    <select id="appJobFilter" class="filter-select" onchange="loadApplications()">
+                        <option value="all">সব জব</option>
+                    </select>
+                </div>
                 
                 <button class="btn btn-info" onclick="loadApplications()">
                     <i class="fas fa-sync-alt"></i> রিফ্রেশ
@@ -257,7 +399,7 @@
                     </tr>
                 </thead>
                 <tbody id="applicationsTable">
-                    <tr><td colspan="8">লোড হচ্ছে...</td></tr>
+                    <tr><td colspan="8" class="loading">লোড হচ্ছে...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -340,6 +482,7 @@
         // Global variables
         let currentEditingJobId = null;
         let allJobs = [];
+        let applicationsCount = {};
 
         // Tab switching function
         function switchTab(tabName) {
@@ -403,6 +546,7 @@
                 await db.collection('manualJobs').add(jobData);
                 showMessage('জব সফলভাবে পোস্ট হয়েছে!');
                 clearForm();
+                loadJobs(); // Refresh the table
             } catch (error) {
                 console.error('Error saving job:', error);
                 showMessage('জব পোস্ট করতে সমস্যা হয়েছে: ' + error.message, 'error');
@@ -422,62 +566,146 @@
             document.getElementById('jobQualifications').value = '';
         }
 
-        // Load jobs for admin view
+        // Load jobs for table view
         async function loadJobs() {
-            const jobsList = document.getElementById('jobsList');
+            const jobsTable = document.getElementById('jobsTable');
 
             try {
                 const snapshot = await db.collection('manualJobs')
                     .orderBy('createdAt', 'desc')
                     .get();
 
-                jobsList.innerHTML = '';
+                jobsTable.innerHTML = '';
                 allJobs = [];
 
                 if (snapshot.empty) {
-                    jobsList.innerHTML = '<p>কোন জব পোস্ট করা হয়নি</p>';
+                    jobsTable.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <i class="fas fa-briefcase"></i>
+                                <h3>কোন জব পোস্ট করা হয়নি</h3>
+                                <p>প্রথম জব পোস্ট করতে "জব পোস্ট করুন" ট্যাবে যান</p>
+                            </td>
+                        </tr>
+                    `;
                     return;
                 }
+
+                // Load applications count for each job
+                await loadApplicationsCount();
 
                 snapshot.forEach(doc => {
                     const job = doc.data();
                     allJobs.push({ id: doc.id, ...job });
-                    const jobCard = createJobCard(job, doc.id);
-                    jobsList.innerHTML += jobCard;
+                    const row = createJobTableRow(job, doc.id);
+                    jobsTable.innerHTML += row;
                 });
 
             } catch (error) {
                 console.error('Error loading jobs:', error);
-                jobsList.innerHTML = '<p>লোড করতে সমস্যা হয়েছে</p>';
+                jobsTable.innerHTML = '<tr><td colspan="8">লোড করতে সমস্যা হয়েছে</td></tr>';
             }
         }
 
-        // Create job card with edit options
-        function createJobCard(job, jobId) {
+        // Load applications count for each job
+        async function loadApplicationsCount() {
+            try {
+                const snapshot = await db.collection('applications').get();
+                applicationsCount = {};
+                
+                snapshot.forEach(doc => {
+                    const application = doc.data();
+                    const jobId = application.jobId;
+                    if (jobId) {
+                        applicationsCount[jobId] = (applicationsCount[jobId] || 0) + 1;
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading applications count:', error);
+            }
+        }
+
+        // Create job table row
+        function createJobTableRow(job, jobId) {
             const statusBadge = job.status === 'active' ? 
-                '<span style="background: #27ae60; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.8em;">একটিভ</span>' :
-                '<span style="background: #e74c3c; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.8em;">ইনএকটিভ</span>';
+                '<span class="status-badge status-active">একটিভ</span>' :
+                '<span class="status-badge status-inactive">ইনএকটিভ</span>';
+
+            const typeBadge = `<span class="job-type-badge">${job.type}</span>`;
+            
+            const applicationsCountText = applicationsCount[jobId] || 0;
 
             return `
-                <div class="job-card">
-                    <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 10px;">
-                        <h3 style="margin: 0; flex: 1;">${job.title}</h3>
-                        ${statusBadge}
-                    </div>
-                    <p><strong>লোকেশন:</strong> ${job.location}</p>
-                    <p><strong>বেতন:</strong> ${job.salary}</p>
-                    <p><strong>জব টাইপ:</strong> ${job.type}</p>
-                    <p><strong>পোস্ট তারিখ:</strong> ${job.createdAt.toDate().toLocaleDateString('bn-BD')}</p>
-                    <div style="margin-top: 10px;">
-                        <button class="btn btn-warning" onclick="editJob('${jobId}')">
-                            <i class="fas fa-edit"></i> এডিট করুন
-                        </button>
-                        <button class="btn btn-danger" onclick="deleteJob('${jobId}')">
-                            <i class="fas fa-trash"></i> ডিলিট করুন
-                        </button>
-                    </div>
-                </div>
+                <tr>
+                    <td>
+                        <strong>${job.title}</strong>
+                        ${job.description ? `<br><small style="color: #666;">${job.description.substring(0, 60)}${job.description.length > 60 ? '...' : ''}</small>` : ''}
+                    </td>
+                    <td>${job.location}</td>
+                    <td>${job.salary}</td>
+                    <td>${typeBadge}</td>
+                    <td>${statusBadge}</td>
+                    <td>${job.createdAt.toDate().toLocaleDateString('bn-BD')}</td>
+                    <td>
+                        <span class="btn btn-info" style="cursor: default;">
+                            <i class="fas fa-users"></i> ${applicationsCountText}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-warning" onclick="editJob('${jobId}')" title="এডিট">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteJob('${jobId}')" title="ডিলিট">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn btn-primary" onclick="viewJobApplications('${jobId}')" title="এপ্লিকেশন দেখুন">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
             `;
+        }
+
+        // Filter jobs
+        function filterJobs() {
+            const searchTerm = document.getElementById('jobSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+
+            const filteredJobs = allJobs.filter(job => {
+                const matchesSearch = job.title.toLowerCase().includes(searchTerm) || 
+                                    job.location.toLowerCase().includes(searchTerm) ||
+                                    job.description.toLowerCase().includes(searchTerm);
+                const matchesStatus = statusFilter === 'all' || job.status === statusFilter;
+                const matchesType = typeFilter === 'all' || job.type === typeFilter;
+
+                return matchesSearch && matchesStatus && matchesType;
+            });
+
+            const jobsTable = document.getElementById('jobsTable');
+            jobsTable.innerHTML = '';
+
+            if (filteredJobs.length === 0) {
+                jobsTable.innerHTML = '<tr><td colspan="8">কোন জব পাওয়া যায়নি</td></tr>';
+                return;
+            }
+
+            filteredJobs.forEach(job => {
+                const row = createJobTableRow(job, job.id);
+                jobsTable.innerHTML += row;
+            });
+        }
+
+        // View job applications
+        function viewJobApplications(jobId) {
+            // Switch to applications tab and filter by this job
+            switchTab('applications');
+            document.getElementById('appJobFilter').value = jobId;
+            setTimeout(() => {
+                loadApplications();
+            }, 100);
         }
 
         // Edit job function
@@ -546,7 +774,7 @@
                 await db.collection('manualJobs').doc(currentEditingJobId).update(jobData);
                 showMessage('জব সফলভাবে আপডেট হয়েছে!');
                 closeEditModal();
-                loadJobs(); // Refresh the jobs list
+                loadJobs(); // Refresh the jobs table
             } catch (error) {
                 console.error('Error updating job:', error);
                 showMessage('জব আপডেট করতে সমস্যা হয়েছে: ' + error.message, 'error');
@@ -570,9 +798,9 @@
             }
         }
 
-        // Load job filter options
+        // Load job filter options for applications
         async function loadJobFilterOptions() {
-            const jobFilter = document.getElementById('jobFilter');
+            const jobFilter = document.getElementById('appJobFilter');
             
             try {
                 const snapshot = await db.collection('manualJobs')
@@ -594,8 +822,8 @@
         // Load applications with filtering
         async function loadApplications() {
             const applicationsTable = document.getElementById('applicationsTable');
-            const statusFilter = document.getElementById('statusFilter').value;
-            const jobFilter = document.getElementById('jobFilter').value;
+            const statusFilter = document.getElementById('appStatusFilter').value;
+            const jobFilter = document.getElementById('appJobFilter').value;
 
             try {
                 let query = db.collection('applications').orderBy('appliedAt', 'desc');
@@ -614,7 +842,15 @@
                 applicationsTable.innerHTML = '';
 
                 if (snapshot.empty) {
-                    applicationsTable.innerHTML = '<tr><td colspan="8">কোন আবেদন পাওয়া যায়নি</td></tr>';
+                    applicationsTable.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="empty-state">
+                                <i class="fas fa-users"></i>
+                                <h3>কোন আবেদন পাওয়া যায়নি</h3>
+                                <p>এই ফিল্টারে কোন আবেদন নেই</p>
+                            </td>
+                        </tr>
+                    `;
                     return;
                 }
 
@@ -634,14 +870,14 @@
         function createApplicationRow(application, appId) {
             const statusBadge = getStatusBadge(application.status);
             const cvButton = application.cvUrl ? 
-                `<button class="btn btn-primary" onclick="downloadCV('${application.cvUrl}', '${application.cvFileName || 'CV'}')">
+                `<button class="btn btn-primary" onclick="downloadCV('${application.cvUrl}', '${application.cvFileName || 'CV'}')" title="সিভি ডাউনলোড">
                     <i class="fas fa-download"></i> সিভি
                 </button>` : 
                 '<span style="color: #999;">N/A</span>';
 
             return `
                 <tr>
-                    <td>${application.name}</td>
+                    <td><strong>${application.name}</strong></td>
                     <td>${application.position}</td>
                     <td>${application.phone}</td>
                     <td>${application.email || 'N/A'}</td>
@@ -650,13 +886,13 @@
                     <td>${application.appliedAt.toDate().toLocaleDateString('bn-BD')}</td>
                     <td>
                         <div class="action-buttons">
-                            <select onchange="updateApplicationStatus('${appId}', this.value)" style="padding: 4px; border-radius: 3px;">
+                            <select onchange="updateApplicationStatus('${appId}', this.value)" style="padding: 4px; border-radius: 3px; font-size: 0.8em;">
                                 <option value="pending" ${application.status === 'pending' ? 'selected' : ''}>পেন্ডিং</option>
                                 <option value="reviewed" ${application.status === 'reviewed' ? 'selected' : ''}>রিভিউড</option>
                                 <option value="selected" ${application.status === 'selected' ? 'selected' : ''}>সিলেক্টেড</option>
                                 <option value="rejected" ${application.status === 'rejected' ? 'selected' : ''}>রিজেক্টেড</option>
                             </select>
-                            <button class="btn btn-danger" onclick="deleteApplication('${appId}')" style="padding: 4px 8px;">
+                            <button class="btn btn-danger" onclick="deleteApplication('${appId}')" title="ডিলিট">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -675,7 +911,7 @@
             };
             
             const statusInfo = statusMap[status] || statusMap['pending'];
-            return `<span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>`;
+            return `<span class="application-status-badge ${statusInfo.class}">${statusInfo.text}</span>`;
         }
 
         // Download CV
@@ -697,6 +933,7 @@
                     statusUpdatedAt: new Date()
                 });
                 showMessage('স্ট্যাটাস সফলভাবে আপডেট হয়েছে!');
+                loadApplications(); // Refresh the table
             } catch (error) {
                 console.error('Error updating application status:', error);
                 showMessage('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে', 'error');
@@ -715,6 +952,7 @@
                     showMessage('ডিলিট করতে সমস্যা হয়েছে', 'error');
                 }
             }
+            
         }
 
         // Close modal when clicking outside
