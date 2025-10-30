@@ -3,577 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ক্যারিয়ার অ্যাডমিন - একতা ফাউন্ডেশন</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+    <title>Admin Panel - Ekota Foundation</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f6fa;
-            color: #333;
-        }
-
-        .admin-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background: #2c3e50;
-            color: white;
-            padding: 20px 0;
-        }
-
-        .sidebar-header {
-            padding: 0 20px 20px;
-            border-bottom: 1px solid #34495e;
-            text-align: center;
-        }
-
-        .sidebar-header h2 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            margin-top: 20px;
-        }
-
-        .menu-item {
-            padding: 15px 20px;
-            cursor: pointer;
-            transition: background 0.3s;
-            border-left: 4px solid transparent;
-        }
-
-        .menu-item:hover,
-        .menu-item.active {
-            background: #34495e;
-            border-left-color: #e74c3c;
-        }
-
-        .menu-item i {
-            margin-right: 10px;
-            width: 20px;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 20px;
-        }
-
-        .header {
-            background: white;
-            padding: 20px;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f5f5; }
+        
+        .admin-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        .admin-header { 
+            background: #2c3e50; 
+            color: white; 
+            padding: 20px; 
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             margin-bottom: 20px;
-            display: flex;
-            justify-content: between;
-            align-items: center;
         }
-
-        .header h1 {
-            color: #2c3e50;
-        }
-
-        .logout-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .section {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #2c3e50;
-            border-bottom: 2px solid #e74c3c;
-            padding-bottom: 10px;
-        }
-
+        
+        /* Tabs */
+        .tabs { display: flex; background: white; border-radius: 10px; margin-bottom: 20px; }
+        .tab { padding: 15px 30px; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab.active { border-bottom: 3px solid #e74c3c; background: #f8f9fa; }
+        
+        /* Tab Content */
+        .tab-content { display: none; background: white; padding: 20px; border-radius: 10px; }
+        .tab-content.active { display: block; }
+        
         /* Forms */
-        .form-group {
-            margin-bottom: 15px;
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #2c3e50; }
+        input, textarea, select { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            font-size: 14px;
         }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
+        textarea { height: 100px; resize: vertical; }
+        
+        /* Buttons */
+        .btn { 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 14px;
+            margin-right: 10px;
         }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        .form-group textarea {
-            height: 100px;
-            resize: vertical;
-        }
-
-        .btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background 0.3s;
-        }
-
-        .btn:hover {
-            background: #c0392b;
-        }
-
-        .btn-success {
-            background: #27ae60;
-        }
-
-        .btn-success:hover {
-            background: #219a52;
-        }
-
-        .btn-warning {
-            background: #f39c12;
-        }
-
-        .btn-warning:hover {
-            background: #e67e22;
-        }
-
-        /* File Upload */
-        .file-upload {
-            border: 2px dashed #ddd;
-            padding: 30px;
-            text-align: center;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: border-color 0.3s;
-            margin-bottom: 10px;
-        }
-
-        .file-upload:hover {
-            border-color: #e74c3c;
-        }
-
-        .file-upload i {
-            font-size: 3rem;
-            color: #e74c3c;
-            margin-bottom: 10px;
-        }
-
-        /* Tables */
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
+        .btn-primary { background: #3498db; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-warning { background: #f39c12; color: white; }
+        
+        /* Job Cards */
+        .job-card { 
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 8px;
             background: #f8f9fa;
-            font-weight: 600;
         }
-
-        .status-pending {
-            color: #f39c12;
-            font-weight: bold;
-        }
-
-        .status-approved {
-            color: #27ae60;
-            font-weight: bold;
-        }
-
-        .status-rejected {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-
-        .action-btn {
-            padding: 6px 12px;
-            margin: 0 2px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            color: white;
-        }
-
-        .btn-download {
-            background: #3498db;
-        }
-
-        .btn-approve {
-            background: #27ae60;
-        }
-
-        .btn-reject {
-            background: #e74c3c;
-        }
-
-        .btn-delete {
-            background: #95a5a6;
-        }
-
-        /* Messages */
-        .message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            display: none;
-        }
-
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
+        
+        /* Tables */
+        .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        .table th { background: #34495e; color: white; }
+        
+        /* Image Upload */
+        .image-upload { border: 2px dashed #ddd; padding: 20px; text-align: center; margin-bottom: 20px; }
+        .image-preview { max-width: 300px; margin: 10px auto; display: none; }
     </style>
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>ক্যারিয়ার অ্যাডমিন</h2>
-                <p>একতা ফাউন্ডেশন</p>
-            </div>
-            <ul class="sidebar-menu">
-                <li class="menu-item active" data-target="photo-upload">
-                    <i class="fas fa-image"></i>হিরো ফটো আপলোড
-                </li>
-                <li class="menu-item" data-target="manual-job">
-                    <i class="fas fa-briefcase"></i>ম্যানুয়াল জব পোস্ট
-                </li>
-                <li class="menu-item" data-target="applications">
-                    <i class="fas fa-users"></i>আবেদনকারীর তালিকা
-                </li>
-            </ul>
+        <div class="admin-header">
+            <h1>একতা ফাউন্ডেশন - অ্যাডমিন প্যানেল</h1>
+            <p>ক্যারিয়ার ম্যানেজমেন্ট</p>
         </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="header">
-                <h1>ক্যারিয়ার ম্যানেজমেন্ট</h1>
-                <button class="logout-btn" onclick="logout()">লগআউট</button>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('imageJob')">ইমেজ জব পোস্ট</div>
+            <div class="tab" onclick="switchTab('manualJob')">ম্যানুয়াল জব পোস্ট</div>
+            <div class="tab" onclick="switchTab('viewJobs')">পোস্টকৃত জবস</div>
+            <div class="tab" onclick="switchTab('applications')">আবেদনকারীরা</div>
+        </div>
+        
+        <!-- Image Job Post Tab -->
+        <div id="imageJob" class="tab-content active">
+            <h2>ইমেজ জব পোস্ট</h2>
+            <div class="image-upload">
+                <input type="file" id="jobImage" accept="image/*" onchange="previewImage()">
+                <p>জব ইমেজ আপলোড করুন (PNG, JPG, JPEG)</p>
+                <img id="imagePreview" class="image-preview" alt="Image Preview">
             </div>
-
-            <div id="message" class="message"></div>
-
-            <!-- Photo Upload Section -->
-            <div class="section active" id="photo-upload">
-                <h2 class="section-title">হিরো ফটো আপলোড</h2>
-                <div class="file-upload" onclick="document.getElementById('heroPhoto').click()">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <p>হিরো সেকশনের জন্য ফটো আপলোড করুন</p>
-                    <p><small>সুপারিশকৃত সাইজ: 1200x600 pixels</small></p>
-                    <input type="file" id="heroPhoto" accept="image/*" style="display: none;">
-                </div>
-                <div id="photoPreview" style="margin-top: 20px;"></div>
-                <button class="btn" onclick="uploadHeroPhoto()" style="margin-top: 15px;">ফটো সেভ করুন</button>
+            <button class="btn btn-success" onclick="uploadImageJob()">জব পোস্ট করুন</button>
+        </div>
+        
+        <!-- Manual Job Post Tab -->
+        <div id="manualJob" class="tab-content">
+            <h2>ম্যানুয়াল জব পোস্ট</h2>
+            <div class="form-group">
+                <label>পোস্টের নাম</label>
+                <input type="text" id="jobTitle" placeholder="উদাহরণ: সফটওয়্যার ডেভেলপার">
             </div>
-
-            <!-- Manual Job Post Section -->
-            <div class="section" id="manual-job">
-                <h2 class="section-title">ম্যানুয়াল জব পোস্ট</h2>
-                <form id="jobPostForm">
-                    <div class="form-group">
-                        <label for="jobName">নাম *</label>
-                        <input type="text" id="jobName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="jobPhone">ফোন নম্বর *</label>
-                        <input type="tel" id="jobPhone" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="jobPosition">পদের নাম *</label>
-                        <input type="text" id="jobPosition" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="jobLocation">লোকেশন *</label>
-                        <input type="text" id="jobLocation" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="jobSalary">বেতন *</label>
-                        <input type="text" id="jobSalary" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="jobResponsibility">দায়িত্ব ও করণীয় *</label>
-                        <textarea id="jobResponsibility" required></textarea>
-                    </div>
-                    <button type="submit" class="btn">জব পোস্ট করুন</button>
-                </form>
+            <div class="form-group">
+                <label>লোকেশন</label>
+                <input type="text" id="jobLocation" placeholder="উদাহরণ: ঢাকা, বাংলাদেশ">
             </div>
-
-            <!-- Applications Section -->
-            <div class="section" id="applications">
-                <h2 class="section-title">আবেদনকারীর তালিকা</h2>
-                <div class="table-container">
-                    <table id="applicationsTable">
-                        <thead>
-                            <tr>
-                                <th>নাম</th>
-                                <th>ফোন</th>
-                                <th>পদের নাম</th>
-                                <th>ঠিকানা</th>
-                                <th>সিভি</th>
-                                <th>স্ট্যাটাস</th>
-                                <th>কার্যক্রম</th>
-                            </tr>
-                        </thead>
-                        <tbody id="applicationsTableBody">
-                            <!-- Applications will be loaded here -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="form-group">
+                <label>বেতন</label>
+                <input type="text" id="jobSalary" placeholder="উদাহরণ: ২৫,০০০ - ৩৫,০০০ টাকা">
             </div>
+            <div class="form-group">
+                <label>জব টাইপ</label>
+                <select id="jobType">
+                    <option value="ফুল-টাইম">ফুল-টাইম</option>
+                    <option value="পার্ট-টাইম">পার্ট-টাইম</option>
+                    <option value="কন্ট্রাক্ট">কন্ট্রাক্ট</option>
+                    <option value="ইন্টার্নশিপ">ইন্টার্নশিপ</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>বিস্তারিত বিবরণ</label>
+                <textarea id="jobDescription" placeholder="জবের বিস্তারিত বিবরণ"></textarea>
+            </div>
+            <div class="form-group">
+                <label>দায়িত্বসমূহ</label>
+                <textarea id="jobResponsibilities" placeholder="দায়িত্বসমূহ (প্রতিটি দায়িত্ব আলাদা লাইনে লিখুন)"></textarea>
+            </div>
+            <div class="form-group">
+                <label>যোগ্যতা</label>
+                <textarea id="jobQualifications" placeholder="যোগ্যতা (প্রতিটি যোগ্যতা আলাদা লাইনে লিখুন)"></textarea>
+            </div>
+            <button class="btn btn-success" onclick="createManualJob()">জব পোস্ট করুন</button>
+        </div>
+        
+        <!-- View Jobs Tab -->
+        <div id="viewJobs" class="tab-content">
+            <h2>পোস্টকৃত জবস</h2>
+            <div id="jobsList"></div>
+        </div>
+        
+        <!-- Applications Tab -->
+        <div id="applications" class="tab-content">
+            <h2>আবেদনকারীদের তালিকা</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>নাম</th>
+                        <th>পদ</th>
+                        <th>ফোন</th>
+                        <th>ইমেইল</th>
+                        <th>সিভি</th>
+                        <th>কার্যক্রম</th>
+                    </tr>
+                </thead>
+                <tbody id="applicationsTable">
+                    <!-- Applications will be loaded here -->
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
-    // Firebase Configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyDNa9egoLhBl2xXYE-bsJuU0f_ih-Or0e0",
-        authDomain: "ekota-foundation.firebaseapp.com",
-        projectId: "ekota-foundation",
-        storageBucket: "ekota-foundation.firebasestorage.app",
-        messagingSenderId: "296231153969",
-        appId: "1:296231153969:web:8862f39394c64c4ea90010"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-
-    // DOM Elements
-    const messageDiv = document.getElementById('message');
-    const applicationsTableBody = document.getElementById('applicationsTableBody');
-    const jobPostForm = document.getElementById('jobPostForm');
-    const heroPhoto = document.getElementById('heroPhoto');
-    const photoPreview = document.getElementById('photoPreview');
-
-    // Check Authentication
-    auth.onAuthStateChanged((user) => {
-        if (!user) {
-            window.location.href = 'index.html';
-        }
-    });
-
-    // Upload Hero Photo - FIXED VERSION
-    heroPhoto.addEventListener('change', function(e) {
-        if (e.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                photoPreview.innerHTML = `
-                    <img src="${e.target.result}" style="max-width: 100%; max-height: 300px; border-radius: 10px;">
-                    <p><small>প্রিভিউ</small></p>
-                `;
-            }
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
-
-    async function uploadHeroPhoto() {
-        const file = heroPhoto.files[0];
-        if (!file) {
-            showMessage('দয়া করে একটি ফটো সিলেক্ট করুন', 'error');
-            return;
-        }
-
-        try {
-            // Show loading message
-            showMessage('ফটো আপলোড হচ্ছে...', 'success');
-            
-            // Upload to Firebase Storage
-            const photoRef = storage.ref().child(`career-hero/${Date.now()}_${file.name}`);
-            const uploadTask = photoRef.put(file);
-            
-            uploadTask.on('state_changed',
-                (snapshot) => {
-                    // Progress monitoring (optional)
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    console.log('Upload is ' + progress + '% done');
-                },
-                (error) => {
-                    showMessage('আপলোড ব্যর্থ: ' + error.message, 'error');
-                },
-                async () => {
-                    // Upload completed successfully
-                    const photoUrl = await uploadTask.snapshot.ref.getDownloadURL();
-
-                    // Save URL to Firestore
-                    await db.collection('careerSettings').doc('heroPhoto').set({
-                        photoUrl: photoUrl,
-                        updatedAt: new Date()
-                    });
-
-                    showMessage('ফটো সফলভাবে আপলোড হয়েছে!', 'success');
-                    photoPreview.innerHTML = '';
-                    heroPhoto.value = '';
-                }
-            );
-
-        } catch (error) {
-            showMessage('ফটো আপলোড করতে সমস্যা: ' + error.message, 'error');
-        }
-    }
-
-    // Post Manual Job - FIXED VERSION
-    jobPostForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const jobData = {
-            name: document.getElementById('jobName').value,
-            phone: document.getElementById('jobPhone').value,
-            position: document.getElementById('jobPosition').value,
-            location: document.getElementById('jobLocation').value,
-            salary: document.getElementById('jobSalary').value,
-            responsibility: document.getElementById('jobResponsibility').value,
-            status: 'active',
-            createdAt: new Date(),
-            type: 'manual' // Add type to distinguish
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNa9egoLhBl2xXYE-bsJuU0f_ih-Or0e0",
+            authDomain: "ekota-foundation.firebaseapp.com",
+            projectId: "ekota-foundation",
+            storageBucket: "ekota-foundation.firebasestorage.app",
+            messagingSenderId: "296231153969",
+            appId: "1:296231153969:web:8862f39394c64c4ea90010",
+            measurementId: "G-YRJY6VSVND"
         };
 
-        try {
-            // Show loading message
-            showMessage('জব পোস্ট তৈরি হচ্ছে...', 'success');
-            
-            // Add to Firestore
-            const docRef = await db.collection('jobs').add(jobData);
-            
-            showMessage('জব পোস্ট সফলভাবে তৈরি হয়েছে!', 'success');
-            jobPostForm.reset();
-            
-            // Log for debugging
-            console.log('Job posted with ID:', docRef.id);
-            console.log('Job data:', jobData);
-            
-        } catch (error) {
-            console.error('Error posting job:', error);
-            showMessage('জব পোস্ট করতে সমস্যা: ' + error.message, 'error');
-        }
-    });
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const storage = firebase.storage();
 
-    // Load Applications
-    async function loadApplications() {
-        try {
-            const snapshot = await db.collection('jobApplications')
-                .orderBy('appliedAt', 'desc')
-                .get();
-            
-            applicationsTableBody.innerHTML = '';
-            
-            snapshot.forEach(doc => {
-                const application = doc.data();
-                const row = `
-                    <tr>
-                        <td>${application.name}</td>
-                        <td>${application.phone}</td>
-                        <td>${application.jobTitle}</td>
-                        <td>${application.address}</td>
-                        <td>
-                            ${application.cvUrl ? 
-                                `<button class="action-btn btn-download" onclick="downloadCV('${application.cvUrl}', '${application.cvName}')">
-                                    সিভি ডাউনলোড
-                                </button>` : 
-                                'N/A'
-                            }
-                        </td>
-                        <td class="status-${application.status}">${getStatusText(application.status)}</td>
-                        <td>
-                            ${application.status === 'pending' ? `
-                                <button class="action-btn btn-approve" onclick="updateApplicationStatus('${doc.id}', 'approved')">
-                                    অ্যাপ্রুভ
-                                </button>
-                                <button class="action-btn btn-reject" onclick="updateApplicationStatus('${doc.id}', 'rejected')">
-                                    রিজেক্ট
-                                </button>
-                            ` : ''}
-                            <button class="action-btn btn-delete" onclick="deleteApplication('${doc.id}')">
-                                ডিলিট
-                            </button>
-                        </td>
-                    </tr>
-                `;
-                applicationsTableBody.innerHTML += row;
+        // Tab switching function
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
             });
-        } catch (error) {
-            console.error('Error loading applications:', error);
-            showMessage('আবেদন লোড করতে সমস্যা', 'error');
-        }
-    }
-
-    // Helper function to check if jobs are being saved
-    async function checkJobs() {
-        try {
-            const snapshot = await db.collection('jobs').get();
-            console.log('Total jobs in database:', snapshot.size);
-            snapshot.forEach(doc => {
-                console.log('Job:', doc.id, doc.data());
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
             });
-        } catch (error) {
-            console.error('Error checking jobs:', error);
+            
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            if(tabName === 'viewJobs') loadJobs();
+            if(tabName === 'applications') loadApplications();
         }
-    }
 
-    // Call this function to debug
-    checkJobs();
+        // Image preview function
+        function previewImage() {
+            const file = document.getElementById('jobImage').files[0];
+            const preview = document.getElementById('imagePreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
 
-    // ... rest of the code remains same
-</script>
+        // Upload image job
+        async function uploadImageJob() {
+            const file = document.getElementById('jobImage').files[0];
+            
+            if (!file) {
+                alert('দয়া করে একটি ইমেজ সিলেক্ট করুন');
+                return;
+            }
+
+            try {
+                // Upload image to Firebase Storage
+                const storageRef = storage.ref();
+                const imageRef = storageRef.child('job-images/' + Date.now() + '_' + file.name);
+                const snapshot = await imageRef.put(file);
+                const imageUrl = await snapshot.ref.getDownloadURL();
+
+                // Save job data to Firestore
+                await db.collection('imageJobs').add({
+                    imageUrl: imageUrl,
+                    createdAt: new Date(),
+                    type: 'image'
+                });
+
+                alert('ইমেজ জব সফলভাবে পোস্ট হয়েছে!');
+                document.getElementById('jobImage').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('ইমেজ আপলোড করতে সমস্যা হয়েছে');
+            }
+        }
+
+        // Create manual job
+        async function createManualJob() {
+            const jobData = {
+                title: document.getElementById('jobTitle').value,
+                location: document.getElementById('jobLocation').value,
+                salary: document.getElementById('jobSalary').value,
+                type: document.getElementById('jobType').value,
+                description: document.getElementById('jobDescription').value,
+                responsibilities: document.getElementById('jobResponsibilities').value.split('\n'),
+                qualifications: document.getElementById('jobQualifications').value.split('\n'),
+                createdAt: new Date(),
+                type: 'manual'
+            };
+
+            // Validation
+            if (!jobData.title || !jobData.location || !jobData.salary) {
+                alert('দয়া করে প্রয়োজনীয় তথ্য পূরণ করুন');
+                return;
+            }
+
+            try {
+                await db.collection('manualJobs').add(jobData);
+                alert('জব সফলভাবে পোস্ট হয়েছে!');
+                
+                // Clear form
+                document.getElementById('jobTitle').value = '';
+                document.getElementById('jobLocation').value = '';
+                document.getElementById('jobSalary').value = '';
+                document.getElementById('jobDescription').value = '';
+                document.getElementById('jobResponsibilities').value = '';
+                document.getElementById('jobQualifications').value = '';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('জব পোস্ট করতে সমস্যা হয়েছে');
+            }
+        }
+
+        // Load jobs for admin view
+        async function loadJobs() {
+            const jobsList = document.getElementById('jobsList');
+            jobsList.innerHTML = '<p>লোড হচ্ছে...</p>';
+
+            try {
+                // Load image jobs
+                const imageJobsSnapshot = await db.collection('imageJobs').get();
+                const manualJobsSnapshot = await db.collection('manualJobs').get();
+
+                jobsList.innerHTML = '';
+
+                // Display image jobs
+                imageJobsSnapshot.forEach(doc => {
+                    const job = doc.data();
+                    const jobCard = `
+                        <div class="job-card">
+                            <h3>ইমেজ জব</h3>
+                            <img src="${job.imageUrl}" style="max-width: 200px; margin: 10px 0;">
+                            <p><strong>পোস্ট তারিখ:</strong> ${job.createdAt.toDate().toLocaleDateString('bn-BD')}</p>
+                            <button class="btn btn-danger" onclick="deleteJob('imageJobs', '${doc.id}')">ডিলিট করুন</button>
+                        </div>
+                    `;
+                    jobsList.innerHTML += jobCard;
+                });
+
+                // Display manual jobs
+                manualJobsSnapshot.forEach(doc => {
+                    const job = doc.data();
+                    const jobCard = `
+                        <div class="job-card">
+                            <h3>${job.title}</h3>
+                            <p><strong>লোকেশন:</strong> ${job.location}</p>
+                            <p><strong>বেতন:</strong> ${job.salary}</p>
+                            <p><strong>জব টাইপ:</strong> ${job.type}</p>
+                            <button class="btn btn-warning" onclick="editJob('${doc.id}')">এডিট করুন</button>
+                            <button class="btn btn-danger" onclick="deleteJob('manualJobs', '${doc.id}')">ডিলিট করুন</button>
+                        </div>
+                    `;
+                    jobsList.innerHTML += jobCard;
+                });
+
+            } catch (error) {
+                console.error('Error loading jobs:', error);
+                jobsList.innerHTML = '<p>লোড করতে সমস্যা হয়েছে</p>';
+            }
+        }
+
+        // Load applications
+        async function loadApplications() {
+            const applicationsTable = document.getElementById('applicationsTable');
+            applicationsTable.innerHTML = '<tr><td colspan="6">লোড হচ্ছে...</td></tr>';
+
+            try {
+                const snapshot = await db.collection('applications').get();
+                applicationsTable.innerHTML = '';
+
+                snapshot.forEach(doc => {
+                    const application = doc.data();
+                    const row = `
+                        <tr>
+                            <td>${application.name}</td>
+                            <td>${application.position}</td>
+                            <td>${application.phone}</td>
+                            <td>${application.email || 'N/A'}</td>
+                            <td>${application.cvUrl ? 
+                                `<a href="${application.cvUrl}" target="_blank" class="btn btn-primary">ডাউনলোড</a>` : 
+                                'N/A'}</td>
+                            <td>
+                                <button class="btn btn-danger" onclick="deleteApplication('${doc.id}')">ডিলিট</button>
+                            </td>
+                        </tr>
+                    `;
+                    applicationsTable.innerHTML += row;
+                });
+
+                if (snapshot.empty) {
+                    applicationsTable.innerHTML = '<tr><td colspan="6">কোন আবেদন পাওয়া যায়নি</td></tr>';
+                }
+
+            } catch (error) {
+                console.error('Error loading applications:', error);
+                applicationsTable.innerHTML = '<tr><td colspan="6">লোড করতে সমস্যা হয়েছে</td></tr>';
+            }
+        }
+
+        // Delete job function
+        async function deleteJob(collectionName, docId) {
+            if (confirm('আপনি কি নিশ্চিত এই জব ডিলিট করতে চান?')) {
+                try {
+                    await db.collection(collectionName).doc(docId).delete();
+                    alert('জব সফলভাবে ডিলিট হয়েছে');
+                    loadJobs();
+                } catch (error) {
+                    console.error('Error deleting job:', error);
+                    alert('ডিলিট করতে সমস্যা হয়েছে');
+                }
+            }
+        }
+
+        // Delete application function
+        async function deleteApplication(docId) {
+            if (confirm('আপনি কি নিশ্চিত এই আবেদন ডিলিট করতে চান?')) {
+                try {
+                    await db.collection('applications').doc(docId).delete();
+                    alert('আবেদন সফলভাবে ডিলিট হয়েছে');
+                    loadApplications();
+                } catch (error) {
+                    console.error('Error deleting application:', error);
+                    alert('ডিলিট করতে সমস্যা হয়েছে');
+                }
+            }
+        }
+
+        // Edit job function (basic implementation)
+        function editJob(jobId) {
+            alert('এডিট ফিচারটি শীঘ্রই আসছে! জব ID: ' + jobId);
+            // You can implement edit functionality here
+        }
+
+        // Load applications when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadApplications();
+        });
+    </script>
 </body>
 </html>
