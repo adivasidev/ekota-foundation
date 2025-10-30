@@ -501,6 +501,28 @@
             display: none;
             grid-column: 1 / -1;
         }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         
         /* Responsive */
         @media (max-width: 768px) {
@@ -892,7 +914,7 @@
             }
         }
 
-        // Application form submission with CV upload FIXED
+        // Application form submission with CV upload - FIXED VERSION
         applicationForm.onsubmit = async function(e) {
             e.preventDefault();
             
@@ -918,8 +940,12 @@
             submitBtn.textContent = 'জমা হচ্ছে...';
 
             try {
+                console.log('Starting application submission...');
+                
                 // Upload CV if provided (optional)
                 if (cvFile) {
+                    console.log('CV file found:', cvFile.name, cvFile.size);
+                    
                     if (cvFile.size > 5 * 1024 * 1024) {
                         alert('সিভি ফাইলের সাইজ 5MB-এর কম হতে হবে');
                         submitBtn.disabled = false;
@@ -927,15 +953,29 @@
                         return;
                     }
 
-                    const storageRef = storage.ref();
-                    const cvRef = storageRef.child('cvs/' + Date.now() + '_' + cvFile.name);
-                    const snapshot = await cvRef.put(cvFile);
-                    formData.cvUrl = await snapshot.ref.getDownloadURL();
-                    formData.cvFileName = cvFile.name;
+                    try {
+                        console.log('Uploading CV to Firebase Storage...');
+                        const storageRef = storage.ref();
+                        const cvRef = storageRef.child('cvs/' + Date.now() + '_' + cvFile.name);
+                        const snapshot = await cvRef.put(cvFile);
+                        console.log('CV upload successful');
+                        
+                        formData.cvUrl = await snapshot.ref.getDownloadURL();
+                        formData.cvFileName = cvFile.name;
+                        console.log('CV URL:', formData.cvUrl);
+                    } catch (uploadError) {
+                        console.error('CV upload failed:', uploadError);
+                        // Continue without CV if upload fails
+                        alert('সিভি আপলোড করতে সমস্যা হয়েছে, কিন্তু আবেদন জমা দেওয়া হচ্ছে...');
+                    }
+                } else {
+                    console.log('No CV file provided');
                 }
 
-                // Save application to Firestore (CV optional)
+                // Save application to Firestore
+                console.log('Saving application to Firestore...', formData);
                 await db.collection('applications').add(formData);
+                console.log('Application saved successfully');
                 
                 showSuccessMessage();
                 closeApplicationModal();
@@ -943,6 +983,12 @@
             } catch (error) {
                 console.error('Error submitting application:', error);
                 alert('আবেদন জমা দিতে সমস্যা হয়েছে: ' + error.message);
+                
+                // Show detailed error in console
+                if (error.code) {
+                    console.error('Error code:', error.code);
+                    console.error('Error message:', error.message);
+                }
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'আবেদন জমা দিন';
@@ -1007,7 +1053,7 @@
             if (unsubscribeManualJobs) unsubscribeManualJobs();
         });
 
-        // Job details function (if needed)
+        // Job details function
         function showJobDetails(jobId) {
             // Implement job details modal if needed
             alert('জব বিস্তারিত দেখানো হবে। এই ফিচারটি শীঘ্রই আসছে!');
