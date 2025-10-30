@@ -6,7 +6,6 @@
     <title>ক্যারিয়ার - একতা ফাউন্ডেশন</title>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -322,7 +321,7 @@
             margin-bottom: 15px;
         }
 
-        /* Application Modal with CV Upload FIXED */
+        /* Application Modal - NO CV UPLOAD */
         .application-modal {
             display: none;
             position: fixed;
@@ -374,32 +373,6 @@
         .form-group textarea {
             height: 80px;
             resize: vertical;
-        }
-        
-        .file-upload {
-            border: 2px dashed #ddd;
-            padding: 20px;
-            text-align: center;
-            border-radius: 5px;
-            margin-top: 5px;
-            transition: border-color 0.3s;
-            cursor: pointer;
-        }
-        
-        .file-upload:hover {
-            border-color: #3498db;
-        }
-        
-        .file-upload i {
-            font-size: 2em;
-            color: #3498db;
-            margin-bottom: 10px;
-        }
-        
-        .file-info {
-            margin-top: 10px;
-            font-size: 0.9em;
-            color: #666;
         }
         
         .required {
@@ -626,7 +599,7 @@
         </div>
     </div>
 
-    <!-- Application Modal with CV Upload FIXED -->
+    <!-- Application Modal - NO CV UPLOAD -->
     <div id="applicationModal" class="application-modal">
         <div class="application-modal-content">
             <span class="close" onclick="closeApplicationModal()" style="position: absolute; right: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #999;">&times;</span>
@@ -653,18 +626,6 @@
                 <div class="form-group">
                     <label for="applicantEmail">ইমেইল</label>
                     <input type="email" id="applicantEmail" placeholder="আপনার ইমেইল ঠিকানা (ঐচ্ছিক)">
-                </div>
-                
-                <div class="form-group">
-                    <label for="applicantCV">সিভি আপলোড (PDF/Word) - <span style="color: #666; font-weight: normal;">ঐচ্ছিক</span></label>
-                    <div class="file-upload" onclick="document.getElementById('applicantCV').click()">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>সিভি আপলোড করতে ক্লিক করুন (ঐচ্ছিক)</p>
-                        <div class="file-info" id="cvFileInfo">
-                            সর্বোচ্চ 5MB, PDF বা Word ফাইল
-                        </div>
-                    </div>
-                    <input type="file" id="applicantCV" accept=".pdf,.doc,.docx" style="display: none;" onchange="showCVFileName()">
                 </div>
                 
                 <div class="form-group">
@@ -740,7 +701,6 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const storage = firebase.storage();
 
         // DOM elements
         const applicationModal = document.getElementById('applicationModal');
@@ -754,7 +714,6 @@
         const mobileLoginBtn = document.getElementById('mobileLoginBtn');
 
         let unsubscribeManualJobs = null;
-        let cvFile = null;
 
         // Load jobs when page loads
         document.addEventListener('DOMContentLoaded', function() {
@@ -861,22 +820,6 @@
             `;
         }
 
-        // Show CV file name
-        function showCVFileName() {
-            const fileInput = document.getElementById('applicantCV');
-            const fileInfo = document.getElementById('cvFileInfo');
-            
-            if (fileInput.files.length > 0) {
-                cvFile = fileInput.files[0];
-                fileInfo.innerHTML = `<i class="fas fa-file"></i> ${cvFile.name} (${(cvFile.size / 1024 / 1024).toFixed(2)} MB)`;
-                fileInfo.style.color = '#27ae60';
-            } else {
-                cvFile = null;
-                fileInfo.innerHTML = 'সর্বোচ্চ 5MB, PDF বা Word ফাইল (ঐচ্ছিক)';
-                fileInfo.style.color = '#666';
-            }
-        }
-
         // Open application modal
         function openApplicationModal(position, jobId) {
             document.getElementById('applyPosition').value = position;
@@ -888,9 +831,6 @@
         function closeApplicationModal() {
             applicationModal.style.display = 'none';
             applicationForm.reset();
-            cvFile = null;
-            document.getElementById('cvFileInfo').innerHTML = 'সর্বোচ্চ 5MB, PDF বা Word ফাইল (ঐচ্ছিক)';
-            document.getElementById('cvFileInfo').style.color = '#666';
         }
 
         // Open login modal
@@ -914,7 +854,7 @@
             }
         }
 
-        // Application form submission with CV upload - FIXED VERSION
+        // Application form submission - SIMPLE VERSION (NO CV)
         applicationForm.onsubmit = async function(e) {
             e.preventDefault();
             
@@ -930,7 +870,7 @@
                 status: 'pending'
             };
 
-            // Validation (CV is optional now)
+            // Validation
             if (!formData.name || !formData.phone || !formData.address) {
                 alert('দয়া করে প্রয়োজনীয় তথ্য পূরণ করুন (নাম, ফোন নম্বর, ঠিকানা)');
                 return;
@@ -940,39 +880,6 @@
             submitBtn.textContent = 'জমা হচ্ছে...';
 
             try {
-                console.log('Starting application submission...');
-                
-                // Upload CV if provided (optional)
-                if (cvFile) {
-                    console.log('CV file found:', cvFile.name, cvFile.size);
-                    
-                    if (cvFile.size > 5 * 1024 * 1024) {
-                        alert('সিভি ফাইলের সাইজ 5MB-এর কম হতে হবে');
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'আবেদন জমা দিন';
-                        return;
-                    }
-
-                    try {
-                        console.log('Uploading CV to Firebase Storage...');
-                        const storageRef = storage.ref();
-                        const cvRef = storageRef.child('cvs/' + Date.now() + '_' + cvFile.name);
-                        const snapshot = await cvRef.put(cvFile);
-                        console.log('CV upload successful');
-                        
-                        formData.cvUrl = await snapshot.ref.getDownloadURL();
-                        formData.cvFileName = cvFile.name;
-                        console.log('CV URL:', formData.cvUrl);
-                    } catch (uploadError) {
-                        console.error('CV upload failed:', uploadError);
-                        // Continue without CV if upload fails
-                        alert('সিভি আপলোড করতে সমস্যা হয়েছে, কিন্তু আবেদন জমা দেওয়া হচ্ছে...');
-                    }
-                } else {
-                    console.log('No CV file provided');
-                }
-
-                // Save application to Firestore
                 console.log('Saving application to Firestore...', formData);
                 await db.collection('applications').add(formData);
                 console.log('Application saved successfully');
@@ -983,12 +890,6 @@
             } catch (error) {
                 console.error('Error submitting application:', error);
                 alert('আবেদন জমা দিতে সমস্যা হয়েছে: ' + error.message);
-                
-                // Show detailed error in console
-                if (error.code) {
-                    console.error('Error code:', error.code);
-                    console.error('Error message:', error.message);
-                }
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'আবেদন জমা দিন';
